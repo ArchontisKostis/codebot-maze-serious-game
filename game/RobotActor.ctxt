@@ -1,0 +1,19 @@
+#BlueJ class context
+comment0.target=RobotActor
+comment0.text=\r\n\ RobotActor\r\n\ \r\n\ Represents\ the\ programmable\ robot.\r\n\ The\ robot\ stores\ commands,\ then\ executes\ them\ in\ sequence.\r\n
+comment1.params=
+comment1.target=void\ act()
+comment2.params=
+comment2.target=void\ handleExecution()
+comment3.params=cmd
+comment3.target=void\ addCommand(java.lang.String)
+comment4.params=
+comment4.target=void\ executeCommands()
+comment4.text=\r\n\ Executes\ all\ stored\ commands\ in\ order\r\n
+comment5.params=cmd
+comment5.target=void\ executeSingleCommand(java.lang.String)
+comment5.text=\r\n\ Executes\ ONE\ command\r\n
+comment6.params=x\ y
+comment6.target=void\ moveTo(int,\ int)
+comment6.text=\r\n\ Moves\ the\ robot\ safely\ within\ the\ game\ area.\r\n\ Prevents\ going\ outside\ the\ defined\ GAME\ AREA.\r\n
+numComments=7
