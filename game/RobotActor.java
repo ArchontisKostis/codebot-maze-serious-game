@@ -15,75 +15,78 @@ public class RobotActor extends Actor
     // ========================
     private static final int STEP_SIZE = 20;
     private static final int EXECUTION_DELAY = 20;
+    private static final int NO_COMMAND_RUNNING = -1;
 
     // ========================
     // STATE
     // ========================
-    private List<String> commands = new ArrayList<>();
+    private long executionStartTime;    
+    private List<Command> commands = new ArrayList<>();
     private boolean isExecuting = false;
-
+    private int currentCommandIndex = 0;
+    
+    
     // ========================
     // MAIN LOOP
     // ========================
-    public void act()
-    {
-        handleExecution();
-    }
+    public void act() {
+        if (!isExecuting) return;
+    
+        if (currentCommandIndex < commands.size()) {
+    
+            // Update UI BEFORE executing
+            MyWorld world = (MyWorld)getWorld();
+            world.updateScriptDisplay(getScriptText(), currentCommandIndex);
+            
+            // Log current command on Terminal Area
+            String label = commands.get(currentCommandIndex).getLabel();
+            world.logToTerminal("~ # [INFO] Running Command: " + label);
+    
+            commands.get(currentCommandIndex).execute(this);
+            currentCommandIndex++;
+    
+            Greenfoot.delay(15);
+    
+        } else {
+            long executionTime = System.currentTimeMillis() - executionStartTime;
 
-    // ========================
-    // EXECUTION HANDLING
-    // ========================
-    private void handleExecution()
-    {
-        if (Greenfoot.isKeyDown("space") && !isExecuting) {
-            executeCommands();
+            MyWorld world = (MyWorld)getWorld();
+            world.logToTerminal("~ # Execution finished in " + executionTime + " ms");
+        
+            commands.clear();
+            isExecuting = false;
+            currentCommandIndex = 0;
         }
     }
-
+    
     // ========================
     // COMMAND SYSTEM
     // ========================
-    public void addCommand(String cmd)
+    public void addCommand(Command cmd)
     {
         commands.add(cmd);
-        System.out.println("Added: " + cmd);
-
-        // Small delay to prevent spam
-        Greenfoot.delay(10);
+        
+        String cmdName = cmd.getClass().getSimpleName();
+        System.out.println("Added: " + cmdName);
+            
+        // 🔥 Update script display
+        MyWorld world = (MyWorld)getWorld();
+        world.updateScriptDisplay(getScriptText(), NO_COMMAND_RUNNING);
     }
 
     /**
      * Executes all stored commands in order
      */
-    public void executeCommands()
-    {
+    public void executeCommands() {
+        if (commands.isEmpty() || isExecuting) return;
+    
         isExecuting = true;
+        currentCommandIndex = 0;
+        
+        executionStartTime = System.currentTimeMillis();
 
-        for (String cmd : commands) {
-            executeSingleCommand(cmd);
-            Greenfoot.delay(EXECUTION_DELAY);
-        }
-
-        commands.clear();
-        isExecuting = false;
-    }
-
-    /**
-     * Executes ONE command
-     */
-    private void executeSingleCommand(String cmd)
-    {
-        int newX = getX();
-        int newY = getY();
-
-        switch (cmd) {
-            case "UP":    newY -= STEP_SIZE; break;
-            case "DOWN":  newY += STEP_SIZE; break;
-            case "LEFT":  newX -= STEP_SIZE; break;
-            case "RIGHT": newX += STEP_SIZE; break;
-        }
-
-        moveTo(newX, newY);
+        MyWorld world = (MyWorld)getWorld();
+        world.logToTerminal("~ # Running Script....");
     }
 
     // ========================
@@ -116,5 +119,47 @@ public class RobotActor extends Actor
     
         // Move the actor to the clamped position
         setLocation(clampedX, clampedY);
+    }
+    
+    public void moveBy(int dx, int dy) {
+        moveTo(getX() + dx, getY() + dy);
+    }
+    
+    public String getScriptText() {
+        StringBuilder sb = new StringBuilder();
+        
+        int lineIndex = 1;  // Line count starts from 1
+        for (Command command : commands) {
+            String name = command.getLabel();
+    
+            sb.append(lineIndex++).append(". ").append(name).append("\n");
+        }
+    
+        return sb.toString();
+    }
+    
+    public List<Command> getCommandsList() {
+        return this.commands;
+    }
+    
+    public void resetCommandsList() {
+        this.commands.clear();
+        
+        // Force UI refresh
+        MyWorld world = (MyWorld)getWorld();
+        world.updateScriptDisplay("", -1);
+        
+        // Clear terminal logs
+        world.clearTerminal();
+    }
+    
+    public void deleteLastCommand() {
+        if (!commands.isEmpty()) {
+            commands.remove(commands.size() - 1);
+        }
+    
+        // Refresh UI
+        MyWorld world = (MyWorld)getWorld();
+        world.updateScriptDisplay(getScriptText(), -1);
     }
 }
