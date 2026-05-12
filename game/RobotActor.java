@@ -1,165 +1,152 @@
 import greenfoot.*;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * RobotActor
- * 
- * Represents the programmable robot.
- * The robot stores commands, then executes them in sequence.
+ *
+ * Programmable robot on a discrete tile grid: each move command steps exactly one
+ * tile. Collision and goals use {@link TileMap}, not pixel overlap.
  */
-public class RobotActor extends Actor
-{
-    // ========================
-    // CONSTANTS
-    // ========================
-    private static final int STEP_SIZE = 20;
-    private static final int EXECUTION_DELAY = 20;
-    private static final int NO_COMMAND_RUNNING = -1;
+public class RobotActor extends Actor {
 
-    // ========================
-    // STATE
-    // ========================
-    private long executionStartTime;    
-    private List<Command> commands = new ArrayList<>();
-    private boolean isExecuting = false;
-    private int currentCommandIndex = 0;
-    
-    
-    // ========================
-    // MAIN LOOP
-    // ========================
-    public void act() {
-        if (!isExecuting) return;
-    
-        if (currentCommandIndex < commands.size()) {
-    
-            // Update UI BEFORE executing
-            MyWorld world = (MyWorld)getWorld();
-            world.updateScriptDisplay(getScriptText(), currentCommandIndex);
-            
-            // Log current command on Terminal Area
-            String label = commands.get(currentCommandIndex).getLabel();
-            world.logToTerminal("~ # [INFO] Running Command: " + label);
-    
-            commands.get(currentCommandIndex).execute(this);
-            currentCommandIndex++;
-    
-            Greenfoot.delay(15);
-    
+    private final Interpreter interpreter = new Interpreter();
+    private long executionStartTime;
+
+    private int tileCol;
+    private int tileRow;
+    private int homeCol;
+    private int homeRow;
+    private boolean goalAnnouncedThisRun;
+
+    public RobotActor() {
+        applyTileSizedSprite();
+    }
+
+    /**
+     * Greenfoot often assigns the class image after construction; rescale whenever we enter a world.
+     */
+    @Override
+    public void addedToWorld(World world) {
+        applyTileSizedSprite();
+    }
+
+    /** Forces the sprite to exactly one tile ({@link GameAreaConfig#TILE_SIZE_PX}). */
+    private void applyTileSizedSprite() {
+        int s = GameAreaConfig.TILE_SIZE_PX;
+        GreenfootImage img = getImage();
+        if (img != null && img.getWidth() > 0) {
+            img = new GreenfootImage(img);
+            img.scale(s, s);
         } else {
-            long executionTime = System.currentTimeMillis() - executionStartTime;
-
-            MyWorld world = (MyWorld)getWorld();
-            world.logToTerminal("~ # Execution finished in " + executionTime + " ms");
-        
-            commands.clear();
-            isExecuting = false;
-            currentCommandIndex = 0;
+            img = new GreenfootImage(s, s);
+            img.setColor(new Color(80, 200, 255));
+            img.fill();
+            img.setColor(Color.WHITE);
+            img.drawRect(0, 0, s - 1, s - 1);
         }
+        setImage(img);
     }
-    
-    // ========================
-    // COMMAND SYSTEM
-    // ========================
-    public void addCommand(Command cmd)
-    {
-        commands.add(cmd);
-        
-        String cmdName = cmd.getClass().getSimpleName();
-        System.out.println("Added: " + cmdName);
-            
-        // 🔥 Update script display
-        MyWorld world = (MyWorld)getWorld();
-        world.updateScriptDisplay(getScriptText(), NO_COMMAND_RUNNING);
+
+    @Override
+    public void act() {
+        if (!interpreter.isRunning()) return;
+
+        MoveStatement move = interpreter.next();
+
+        if (move == null) {
+            long elapsed = System.currentTimeMillis() - executionStartTime;
+            world().logToTerminal("~ # Done in " + elapsed + " ms");
+            return;
+        }
+
+        world().logToTerminal("~ # " + move.label());
+        executeMove(move.direction);
+
+        Greenfoot.delay(15);
     }
 
     /**
-     * Executes all stored commands in order
+     * Places the robot on a tile and records that tile as home for RUN / RESET.
+     * Called from {@link MyWorld#installTileLevel}.
      */
-    public void executeCommands() {
-        if (commands.isEmpty() || isExecuting) return;
-    
-        isExecuting = true;
-        currentCommandIndex = 0;
-        
+    public void placeOnTile(int col, int row) {
+        tileCol = col;
+        tileRow = row;
+        homeCol = col;
+        homeRow = row;
+        syncPixelsFromTile();
+    }
+
+    /** Teleports the robot back to its level starting tile. */
+    public void resetToHome() {
+        tileCol = homeCol;
+        tileRow = homeRow;
+        goalAnnouncedThisRun = false;
+        syncPixelsFromTile();
+    }
+
+    public void run(Program program) {
+        if (interpreter.isRunning()) return;
+        resetToHome();
+        goalAnnouncedThisRun = false;
         executionStartTime = System.currentTimeMillis();
-
-        MyWorld world = (MyWorld)getWorld();
-        world.logToTerminal("~ # Running Script....");
+        interpreter.load(program);
+        world().logToTerminal("~ # Running...");
     }
 
-    // ========================
-    // MOVEMENT
-    // ========================
-    /**
-     * Moves the robot safely within the game area.
-     * Prevents going outside the defined GAME AREA.
-     */
-    private void moveTo(int x, int y)
-    {
-        // In Greenfoot, getX() and getY() return the center of the actor, not the top-left corner. 
-        // To keep the entire actor visible within the panel, we need to account for half of its width and height.
-        // We need this to offset the edges so the actor doesn't visually overflow when it reaches the ends of the world
-        int halfWidth = getImage().getWidth() / 2;
-        int halfHeight = getImage().getHeight() / 2;
-        
-        
-        // Clamp X coordinate:
-        // - Minimum allowed X = left boundary + halfWidth
-        // - Maximum allowed X = right boundary - halfWidth
-        // This ensures the actor's left and right edges stay inside the game area
-        int clampedX = Math.max(MyWorld.GAME_AREA_MIN_X + halfWidth, Math.min(x, MyWorld.GAME_AREA_MAX_X - halfWidth));
-        
-        // Clamp Y coordinate:
-        // - Minimum allowed Y = top boundary + halfHeight
-        // - Maximum allowed Y = bottom boundary - halfHeight
-        // This ensures the actor's top and bottom edges stay inside the game area
-        int clampedY = Math.max(MyWorld.GAME_AREA_MIN_Y + halfHeight, Math.min(y, MyWorld.GAME_AREA_MAX_Y - halfHeight));
-    
-        // Move the actor to the clamped position
-        setLocation(clampedX, clampedY);
+    public boolean isRunning() {
+        return interpreter.isRunning();
     }
-    
-    public void moveBy(int dx, int dy) {
-        moveTo(getX() + dx, getY() + dy);
-    }
-    
-    public String getScriptText() {
-        StringBuilder sb = new StringBuilder();
-        
-        int lineIndex = 1;  // Line count starts from 1
-        for (Command command : commands) {
-            String name = command.getLabel();
-    
-            sb.append(lineIndex++).append(". ").append(name).append("\n");
+
+    private void executeMove(MoveStatement.Direction dir) {
+        int dc = 0;
+        int dr = 0;
+        switch (dir) {
+            case UP:
+                dr = -1;
+                break;
+            case DOWN:
+                dr = 1;
+                break;
+            case LEFT:
+                dc = -1;
+                break;
+            case RIGHT:
+                dc = 1;
+                break;
         }
-    
-        return sb.toString();
-    }
-    
-    public List<Command> getCommandsList() {
-        return this.commands;
-    }
-    
-    public void resetCommandsList() {
-        this.commands.clear();
-        
-        // Force UI refresh
-        MyWorld world = (MyWorld)getWorld();
-        world.updateScriptDisplay("", -1);
-        
-        // Clear terminal logs
-        world.clearTerminal();
-    }
-    
-    public void deleteLastCommand() {
-        if (!commands.isEmpty()) {
-            commands.remove(commands.size() - 1);
+
+        int nextCol = tileCol + dc;
+        int nextRow = tileRow + dr;
+        TileMap map = world().getTileMap();
+
+        if (map == null || !map.isWalkable(nextCol, nextRow)) {
+            if (map == null || !GameAreaConfig.isInsideGrid(nextCol, nextRow)) {
+                world().logToTerminal("~ # [!] Can't leave the game area");
+            } else {
+                world().logToTerminal("~ # [!] Blocked by obstacle");
+            }
+            return;
         }
-    
-        // Refresh UI
-        MyWorld world = (MyWorld)getWorld();
-        world.updateScriptDisplay(getScriptText(), -1);
+
+        tileCol = nextCol;
+        tileRow = nextRow;
+        syncPixelsFromTile();
+
+        if (map.isCoinAt(tileCol, tileRow)) {
+            world().collectCoinAt(tileCol, tileRow);
+        }
+
+        if (map.isGoalAt(tileCol, tileRow) && !goalAnnouncedThisRun) {
+            world().logToTerminal("~ # *** LEVEL COMPLETE! ***");
+            goalAnnouncedThisRun = true;
+        }
+    }
+
+    private void syncPixelsFromTile() {
+        setLocation(GameAreaConfig.tileCentreX(tileCol), GameAreaConfig.tileCentreY(tileRow));
+    }
+
+    private MyWorld world() {
+        return (MyWorld) getWorld();
     }
 }
