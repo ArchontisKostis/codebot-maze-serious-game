@@ -29,8 +29,8 @@ public class MyWorld extends World {
 
     public static final int GAME_AREA_MIN_X = 0;
     public static final int GAME_AREA_MAX_X = GameAreaConfig.GAME_AREA_WIDTH_PX;
-    public static final int GAME_AREA_MIN_Y = 0;
-    public static final int GAME_AREA_MAX_Y = GameAreaConfig.GAME_AREA_HEIGHT_PX;
+    public static final int GAME_AREA_MIN_Y = GameScreenLayout.HUD_STRIP_H;
+    public static final int GAME_AREA_MAX_Y = GameScreenLayout.HUD_STRIP_H + GameAreaConfig.GAME_AREA_HEIGHT_PX;
 
     public static final int SCRIPT_AREA_X   = GameScreenLayout.SCRIPT_AREA_X;
     public static final int SCRIPT_AREA_W   = GameScreenLayout.SCRIPT_AREA_W;
@@ -58,6 +58,7 @@ public class MyWorld extends World {
     private Level       level;
     private TileMap     tileMap;
     private final List<String> terminalLog = new ArrayList<>();
+    private int attempts = 0;
 
     // ── Constructor ───────────────────────────────────────────────────────────
 
@@ -70,6 +71,7 @@ public class MyWorld extends World {
 
         level.setup(this);
         redrawTerminal();
+        redrawHUD();
     }
 
     // ── Setup ─────────────────────────────────────────────────────────────────
@@ -142,6 +144,8 @@ public class MyWorld extends World {
                 return;
             }
 
+            attempts++;
+            redrawHUD();
             robot.run(program);
 
         } catch (Lexer.LexError e) {
@@ -194,6 +198,22 @@ public class MyWorld extends World {
                 TERMINAL_X + GameScreenLayout.scale(8),
                 TERMINAL_Y + GameScreenLayout.scale(24) + i * TERMINAL_LINE_H);
         }
+    }
+
+    // ── HUD ───────────────────────────────────────────────────────────────────
+
+    private void redrawHUD() {
+        GreenfootImage bg = getBackground();
+
+        bg.setColor(new Color(20, 20, 35));
+        bg.fillRect(0, 0, GameScreenLayout.WORLD_WIDTH, GameScreenLayout.HUD_STRIP_H);
+
+        bg.setFont(new Font(GameScreenLayout.scale(12)));
+        bg.setColor(new Color(200, 200, 200));
+        bg.drawString(
+            "Level: " + LevelManager.getCurrentLevelNumber() + "   Attempts: " + attempts,
+            GameScreenLayout.scale(10),
+            GameScreenLayout.scale(14));
     }
 
     // ── Tiled game area (called from {@link Level} implementations) ─────────────
