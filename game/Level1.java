@@ -1,8 +1,11 @@
 /**
- * Example level defined as ASCII art ({@link AsciiTileMapParser}).
- * Edit {@link #LEVEL_LINES} to change layout; each row must be
- * {@link GameAreaConfig#TILE_COLS} characters and there must be
- * {@link GameAreaConfig#TILE_ROWS} rows.
+ * Level 1 — Straight Shot
+ *
+ * Open room, no obstacles. Start left, goal 5 tiles right.
+ * Pedagogical intent: introduce moveRight and establish the read-type-run cycle.
+ * Solution: moveRight × 5
+ *
+ * S at (4,10) → right 5 → (9,10) = G
  */
 public class Level1 implements Level {
 
@@ -10,16 +13,16 @@ public class Level1 implements Level {
     private static final String[] LEVEL_LINES = {
         "########################",
         "#......................#",
-        "#..########............#",
-        "#.......##.............#",
-        "########.#.............#",
-        "#......S.#.............#",
-        "#..#####.#.............#",
-        "#..#.....#.............#",
-        "#..#.#####.............#",
-        "#..#...................#",
-        "#..#...CCCC..........G.#",
-        "#..#...................#",
+        "#......................#",
+        "#......................#",
+        "#......................#",
+        "#......................#",
+        "#......................#",
+        "#......................#",
+        "#......................#",
+        "#......................#",
+        "#...S....G.............#",
+        "#......................#",
         "#......................#",
         "#......................#",
         "#......................#",
