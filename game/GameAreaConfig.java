@@ -41,7 +41,7 @@ public final class GameAreaConfig {
      * Matches {@link MyWorld#GAME_AREA_MIN_Y} (0) for this layout.
      */
     public static int tileOriginY(int row) {
-        return row * TILE_SIZE_PX;
+        return GameScreenLayout.HUD_STRIP_H + row * TILE_SIZE_PX;
     }
 
     /** Centre pixel X for placing actors on a tile. */
