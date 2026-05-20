@@ -61,7 +61,7 @@ public class RobotActor extends Actor {
         world().logToTerminal("~ # " + move.label());
         executeMove(move.direction);
 
-        Greenfoot.delay(15);
+        Greenfoot.delay(Settings.getAnimationDelay());
     }
 
     /**
