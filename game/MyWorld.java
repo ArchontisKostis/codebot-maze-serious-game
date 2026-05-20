@@ -59,6 +59,7 @@ public class MyWorld extends World {
     private TileMap     tileMap;
     private final List<String> terminalLog = new ArrayList<>();
     private int attempts = 0;
+    private int goalAdvanceCountdown = -1;
 
     // ── Constructor ───────────────────────────────────────────────────────────
 
@@ -122,6 +123,35 @@ public class MyWorld extends World {
             CONTROLS_Y + GameScreenLayout.CONTROLS_BTN_OFFSET_Y);
     }
 
+    // ── Act ───────────────────────────────────────────────────────────────────
+
+    @Override
+    public void act() {
+        if (goalAdvanceCountdown < 0) return;
+        if (goalAdvanceCountdown > 0) {
+            goalAdvanceCountdown--;
+        } else {
+            goalAdvanceCountdown = -1;
+            advanceToNextLevel();
+        }
+    }
+
+    // ── Goal / level advance ──────────────────────────────────────────────────
+
+    public void onGoalReached() {
+        goalAdvanceCountdown = 60; // ~1 s at default Greenfoot speed
+    }
+
+    private void advanceToNextLevel() {
+        if (LevelManager.hasNextLevel()) {
+            LevelManager.advanceLevel();
+            Greenfoot.setWorld(new MyWorld(LevelManager.getCurrentLevel()));
+        } else {
+            LevelManager.resetToFirstLevel();
+            Greenfoot.setWorld(new HomeWorld());
+        }
+    }
+
     // ── Button actions ────────────────────────────────────────────────────────
 
     private void runScript() {
@@ -132,6 +162,11 @@ public class MyWorld extends World {
 
         if (source.isEmpty()) {
             logToTerminal("~ # [!] Nothing to run");
+            return;
+        }
+
+        if (source.equals("skipLvl")) {
+            onGoalReached();
             return;
         }
 
