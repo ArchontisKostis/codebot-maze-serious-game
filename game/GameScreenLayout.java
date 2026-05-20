@@ -31,25 +31,28 @@ public final class GameScreenLayout {
     /** Tile edge; baseline {@code 25px} → grid stays {@code 24×20} ({@code 600/25 × 500/25}). */
     public static final int TILE_SIZE_PX = scale(25);
 
+    /** Thin strip at y=0 that holds the HUD (level number, attempt counter). */
+    public static final int HUD_STRIP_H = scale(17);
+
     public static final int SCRIPT_AREA_X = GAME_AREA_WIDTH_PX;
     public static final int SCRIPT_AREA_W = scale(200);
-    public static final int SCRIPT_AREA_Y = 0;
+    public static final int SCRIPT_AREA_Y = HUD_STRIP_H;
     public static final int SCRIPT_AREA_H = GAME_AREA_HEIGHT_PX;
 
     public static final int TERMINAL_X = 0;
-    public static final int TERMINAL_Y = GAME_AREA_HEIGHT_PX;
+    public static final int TERMINAL_Y = HUD_STRIP_H + GAME_AREA_HEIGHT_PX;
     public static final int TERMINAL_W = GAME_AREA_WIDTH_PX;
     public static final int TERMINAL_H = scale(100);
 
     public static final int CONTROLS_X = GAME_AREA_WIDTH_PX;
-    public static final int CONTROLS_Y = GAME_AREA_HEIGHT_PX;
+    public static final int CONTROLS_Y = HUD_STRIP_H + GAME_AREA_HEIGHT_PX;
     public static final int CONTROLS_W = scale(200);
     /** Same height as {@link #TERMINAL_H} so the bottom row lines up. */
     public static final int CONTROLS_H = scale(100);
 
-    /** Total world size: (game|script) × (game|bottom). */
+    /** Total world size: (hud|game|script) × (hud|game|bottom). */
     public static final int WORLD_WIDTH = GAME_AREA_WIDTH_PX + SCRIPT_AREA_W;
-    public static final int WORLD_HEIGHT = GAME_AREA_HEIGHT_PX + TERMINAL_H;
+    public static final int WORLD_HEIGHT = HUD_STRIP_H + GAME_AREA_HEIGHT_PX + TERMINAL_H;
 
     /** RUN / RESET centres relative to {@link #CONTROLS_X} / {@link #CONTROLS_Y}. */
     public static final int CONTROLS_BTN_A_OFFSET_X = scale(55);
