@@ -67,6 +67,12 @@ public class Interpreter {
         return running;
     }
 
+    /** Stop execution immediately (e.g. goal reached mid-program). */
+    public void halt() {
+        running = false;
+        stack.clear();
+    }
+
     /**
      * Advance one execution step.
      *
