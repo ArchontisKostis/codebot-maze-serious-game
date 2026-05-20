@@ -137,8 +137,10 @@ public class RobotActor extends Actor {
         }
 
         if (map.isGoalAt(tileCol, tileRow) && !goalAnnouncedThisRun) {
-            world().logToTerminal("~ # *** LEVEL COMPLETE! ***");
             goalAnnouncedThisRun = true;
+            interpreter.halt();
+            world().logToTerminal("~ # *** LEVEL COMPLETE! ***");
+            world().onGoalReached();
         }
     }
 
