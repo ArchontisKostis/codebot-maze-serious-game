@@ -60,6 +60,9 @@ public class MyWorld extends World {
     private final List<String> terminalLog = new ArrayList<>();
     private int attempts = 0;
     private int goalAdvanceCountdown = -1;
+    private int     totalCoins     = 0;
+    private int     coinsCollected = 0;
+    private Program lastProgram    = null;
 
     // ── Constructor ───────────────────────────────────────────────────────────
 
@@ -139,7 +142,28 @@ public class MyWorld extends World {
     // ── Goal / level advance ──────────────────────────────────────────────────
 
     public void onGoalReached() {
+        if (lastProgram != null) {
+            int cScore   = new CompletionScorer().score(lastProgram, totalCoins, coinsCollected, attempts);
+            int aScore   = new AbstractionScorer().score(lastProgram, totalCoins, coinsCollected, attempts);
+            int combined = (cScore * 7 + aScore * 3) / 10;
+            logToTerminal("~ # " + starString(toStars(combined)) + "  (" + combined + "/100)");
+        }
         goalAdvanceCountdown = 60; // ~1 s at default Greenfoot speed
+    }
+
+    private int toStars(int score) {
+        if (score >= 85) return 3;
+        if (score >= 65) return 2;
+        return 1;
+    }
+
+    private String starString(int stars) {
+        switch (stars) {
+            case 3:  return "★★★"; // ★★★
+            case 2:  return "★★☆"; // ★★☆
+            case 1:  return "★☆☆"; // ★☆☆
+            default: return "☆☆☆"; // ☆☆☆
+        }
     }
 
     private void advanceToNextLevel() {
@@ -180,6 +204,7 @@ public class MyWorld extends World {
             }
 
             attempts++;
+            lastProgram = program;
             redrawHUD();
             robot.run(program);
 
@@ -273,6 +298,14 @@ public class MyWorld extends World {
                     + GameAreaConfig.TILE_ROWS);
         }
         this.tileMap = map;
+        int count = 0;
+        for (int r = 0; r < map.getRows(); r++) {
+            for (int c = 0; c < map.getCols(); c++) {
+                if (map.isCoinAt(c, r)) count++;
+            }
+        }
+        totalCoins     = count;
+        coinsCollected = 0;
         GameAreaTilePainter.paintTileBackgrounds(this, map);
         TileActorLayer.spawn(this, map);
         robot.placeOnTile(startCol, startRow);
@@ -284,6 +317,7 @@ public class MyWorld extends World {
             return;
         }
         tileMap.getCell(col, row).setObjectKind(TileObjectKind.NONE);
+        coinsCollected++;
         int x = GameAreaConfig.tileCentreX(col);
         int y = GameAreaConfig.tileCentreY(row);
         for (Coin coin : getObjectsAt(x, y, Coin.class)) {
