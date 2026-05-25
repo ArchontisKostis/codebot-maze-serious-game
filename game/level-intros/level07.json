@@ -1,0 +1,7 @@
+{
+  "chamberName": "Offset Corridor",
+  "narrative": "The final sequencing chamber offsets each corridor from the last. Count first, type second, and trust the plan when RIVETS disappears into the turn.",
+  "commands": "moveRight, moveDown, moveLeft, moveUp",
+  "example": "moveRight\nmoveRight\nmoveDown\nmoveDown",
+  "objective": "Complete the final sequential-control test."
+}

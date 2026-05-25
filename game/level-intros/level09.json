@@ -1,0 +1,7 @@
+{
+  "chamberName": "Step and Repeat",
+  "narrative": "Only part of this route repeats. The test is no longer whether you can use a loop, but whether you can choose the right work for it.",
+  "commands": "moveRight, moveDown, moveLeft, moveUp, repeat(N) { ... }",
+  "example": "repeat(5) {\n  moveRight\n}\nmoveDown",
+  "objective": "Loop one segment, then finish the route sequentially."
+}

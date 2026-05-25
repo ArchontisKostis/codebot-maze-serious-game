@@ -1,0 +1,7 @@
+{
+  "chamberName": "Cardinal Control",
+  "narrative": "The simulator unlocks the full movement set. RIVETS can now travel in every cardinal direction, but every change in course must still come from you.",
+  "commands": "moveRight, moveDown, moveLeft, moveUp",
+  "example": "moveRight\nmoveDown\nmoveRight",
+  "objective": "Use direction changes to keep RIVETS on the safe path."
+}

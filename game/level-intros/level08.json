@@ -1,0 +1,7 @@
+{
+  "chamberName": "Pattern Recognition",
+  "narrative": "The same long lane returns, but the simulator now offers a better language. A capable programmer does not copy the same thought eight times; they name the repetition.",
+  "commands": "moveRight, moveDown, moveLeft, moveUp, repeat(N) { ... }",
+  "example": "repeat(8) {\n  moveRight\n}",
+  "objective": "Use repeat to express repeated movement cleanly."
+}

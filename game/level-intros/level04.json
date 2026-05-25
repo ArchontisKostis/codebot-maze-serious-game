@@ -1,0 +1,7 @@
+{
+  "chamberName": "Endurance",
+  "narrative": "A long straight lane opens ahead. This is not difficult, only repetitive. The research team is measuring whether you notice the cost of brute force.",
+  "commands": "moveRight, moveDown, moveLeft, moveUp",
+  "example": "moveRight\nmoveRight\nmoveRight\n...",
+  "objective": "Reach the goal with a correct sequential program."
+}

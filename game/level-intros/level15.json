@@ -1,0 +1,7 @@
+{
+  "chamberName": "Final Chamber",
+  "narrative": "The last gate assembles everything RIVETS has practiced: sequence, repetition, nesting, and restraint. The code you write here completes the training record.",
+  "commands": "all movement commands, repeat(N) { ... }, nested repeat blocks",
+  "example": "repeat(3) {\n  repeat(6) {\n    moveRight\n  }\n  moveDown\n}",
+  "objective": "Complete the synthesis chamber and receive the final RIVETS classification."
+}

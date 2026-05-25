@@ -1,0 +1,7 @@
+{
+  "chamberName": "Detour",
+  "narrative": "A blocked path tests the difference between intention and instruction. RIVETS cannot see the better route; your program must route it around the obstruction.",
+  "commands": "moveRight, moveDown, moveLeft, moveUp",
+  "example": "moveDown\nmoveRight\nmoveRight\nmoveUp",
+  "objective": "Navigate around obstacles without losing the goal."
+}

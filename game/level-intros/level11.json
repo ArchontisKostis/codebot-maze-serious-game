@@ -1,0 +1,7 @@
+{
+  "chamberName": "Column Descent",
+  "narrative": "The route now has structure inside structure: a repeated row wrapped inside a repeated descent. This is where RIVETS begins to learn from compact ideas.",
+  "commands": "move commands, repeat(N) { ... }, nested repeat blocks",
+  "example": "repeat(3) {\n  repeat(3) {\n    moveRight\n  }\n  moveDown\n}",
+  "objective": "Recognise the repeated row pattern."
+}

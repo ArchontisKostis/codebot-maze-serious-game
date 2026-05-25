@@ -1,0 +1,7 @@
+{
+  "chamberName": "Broken Symmetry",
+  "narrative": "This chamber almost behaves. One break in the pattern is enough to punish blind repetition, so the strongest program must combine structure with attention.",
+  "commands": "move commands, repeat(N) { ... }, hybrid loop and sequential logic",
+  "example": "repeat(2) {\n  moveRight\n  moveDown\n}\nmoveRight",
+  "objective": "Combine loops with exact standalone moves."
+}

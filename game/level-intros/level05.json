@@ -1,0 +1,7 @@
+{
+  "chamberName": "Mixed Path",
+  "narrative": "The chamber stops being a hallway and becomes a route. RIVETS needs a plan made of phases: move, turn, recover, and continue.",
+  "commands": "moveRight, moveDown, moveLeft, moveUp",
+  "example": "moveRight\nmoveRight\nmoveDown\nmoveRight",
+  "objective": "Break the route into ordered movement phases."
+}

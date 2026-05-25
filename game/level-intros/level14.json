@@ -1,0 +1,7 @@
+{
+  "chamberName": "Wide Traversal",
+  "narrative": "The route stretches across the simulation frame. There are several correct decompositions, but the best ones reveal the large shape instead of listing every footstep.",
+  "commands": "move commands, repeat(N) { ... }, multi-segment loops",
+  "example": "repeat(5) {\n  moveRight\n}\nmoveDown\nrepeat(5) {\n  moveLeft\n}",
+  "objective": "Represent long route segments efficiently."
+}

@@ -1,0 +1,7 @@
+{
+  "chamberName": "Angular Shift",
+  "narrative": "The training corridor bends for the first time. RIVETS has no instinct for corners; it only knows the next command you write. Sequence the turn with care.",
+  "commands": "moveRight, moveDown",
+  "example": "moveRight\nmoveRight\nmoveRight\nmoveDown\nmoveDown",
+  "objective": "Move through the corner by translating the route into exact steps."
+}

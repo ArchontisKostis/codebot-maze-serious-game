@@ -1,0 +1,7 @@
+{
+  "chamberName": "Stagger Grid",
+  "narrative": "The rows still repeat, but each one begins from a shifted position. The simulator is watching whether you can preserve structure while adapting to offset.",
+  "commands": "move commands, repeat(N) { ... }, nested repeat blocks",
+  "example": "repeat(3) {\n  repeat(3) {\n    moveRight\n  }\n  moveDown\n}",
+  "objective": "Use structure while accounting for the offset."
+}

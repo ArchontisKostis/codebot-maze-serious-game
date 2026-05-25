@@ -1,0 +1,7 @@
+{
+  "chamberName": "Linear Traversal",
+  "narrative": "The first simulation chamber boots in silence. RIVETS is awake, but it will not improvise. Give one clear instruction at a time and prove the link between code and motion.",
+  "commands": "moveRight",
+  "example": "moveRight",
+  "objective": "Guide RIVETS across the test lane to the goal tile."
+}
