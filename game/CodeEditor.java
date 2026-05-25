@@ -37,6 +37,10 @@ public class CodeEditor extends Actor {
     private static final int PAD_LEFT   = (int) Math.round(26 * GameScreenLayout.UI_SCALE);
     private static final int PAD_TOP    = (int) Math.round(6 * GameScreenLayout.UI_SCALE);
     private static final int CHAR_W     = (int) Math.round(7 * GameScreenLayout.UI_SCALE);
+    private static final int STEP_BTN_W = GameScreenLayout.scale(48);
+    private static final int STEP_BTN_H = GameScreenLayout.scale(15);
+    private static final int STEP_BTN_X = W - STEP_BTN_W - GameScreenLayout.scale(6);
+    private static final int STEP_BTN_Y = GameScreenLayout.scale(3);
 
     /** Toggles every {@link #BLINK_INTERVAL} acts when the user is idle so the caret blinks. */
     private static final int BLINK_INTERVAL = 18;
@@ -54,10 +58,17 @@ public class CodeEditor extends Actor {
 
     private int  blinkTick    = 0;
     private boolean caretVisible = true;
+    private int executingLine = -1;
+    private final Runnable stepAction;
 
     // ── Constructor ───────────────────────────────────────────────────────────
 
     public CodeEditor() {
+        this(null);
+    }
+
+    public CodeEditor(Runnable stepAction) {
+        this.stepAction = stepAction;
         redraw();
     }
 
@@ -65,11 +76,35 @@ public class CodeEditor extends Actor {
 
     @Override
     public void act() {
+        handleMouse();
+
         String key = Greenfoot.getKey();
         if (key != null && handleKey(key)) {
             resetCaretBlink();
         }
         tickCaretBlink();
+    }
+
+    private void handleMouse() {
+        if (stepAction == null || !Greenfoot.mouseClicked(this)) {
+            return;
+        }
+
+        MouseInfo mouse = Greenfoot.getMouseInfo();
+        if (mouse == null) {
+            return;
+        }
+
+        int localX = mouse.getX() - (getX() - W / 2);
+        int localY = mouse.getY() - (getY() - H / 2);
+        if (insideStepButton(localX, localY)) {
+            stepAction.run();
+        }
+    }
+
+    private boolean insideStepButton(int x, int y) {
+        return x >= STEP_BTN_X && x <= STEP_BTN_X + STEP_BTN_W
+            && y >= STEP_BTN_Y && y <= STEP_BTN_Y + STEP_BTN_H;
     }
 
     // ── Public API ────────────────────────────────────────────────────────────
@@ -84,8 +119,23 @@ public class CodeEditor extends Actor {
         text.setLength(0);
         cursorPos = 0;
         goalColumn = 0;
+        executingLine = -1;
         resetCaretBlink();
         redraw();
+    }
+
+    /** Shows a small marker beside the 1-based source line currently being executed. */
+    public void setExecutingLine(int lineNumber) {
+        if (executingLine == lineNumber) {
+            return;
+        }
+        executingLine = lineNumber;
+        redraw();
+    }
+
+    /** Removes the execution marker. */
+    public void clearExecutingLine() {
+        setExecutingLine(-1);
     }
 
     // ── Key handling ──────────────────────────────────────────────────────────
@@ -362,6 +412,7 @@ public class CodeEditor extends Actor {
         img.setColor(new Color(160, 160, 240));
         img.setFont(new Font((int) Math.round(11 * GameScreenLayout.UI_SCALE)));
         img.drawString("  CODE EDITOR", 2, TITLE_H - (int) Math.round(5 * GameScreenLayout.UI_SCALE));
+        drawStepButton(img);
 
         // ── Split text into lines ─────────────────────────────────────────────
         String content  = text.toString();
@@ -398,6 +449,14 @@ public class CodeEditor extends Actor {
             img.setColor(new Color(90, 90, 110));
             img.drawString(String.valueOf(i + 1), 2, baseY);
 
+            if (i + 1 == executingLine) {
+                int dotSize = Math.max(5, GameScreenLayout.scale(7));
+                int dotX = Math.max(1, PAD_LEFT - GameScreenLayout.scale(12));
+                int dotY = baseY - LINE_H / 2;
+                img.setColor(new Color(80, 230, 150));
+                img.fillOval(dotX, dotY, dotSize, dotSize);
+            }
+
             drawHighlightedLine(img, lines[i], baseY);
 
             if (i == cursorLine && caretVisible) {
@@ -408,5 +467,15 @@ public class CodeEditor extends Actor {
         }
 
         setImage(img);
+    }
+
+    private void drawStepButton(GreenfootImage img) {
+        img.setColor(new Color(68, 82, 130));
+        img.fillRect(STEP_BTN_X, STEP_BTN_Y, STEP_BTN_W, STEP_BTN_H);
+        img.setColor(new Color(140, 165, 235));
+        img.drawRect(STEP_BTN_X, STEP_BTN_Y, STEP_BTN_W, STEP_BTN_H);
+        img.setColor(new Color(225, 235, 255));
+        img.setFont(new Font("SansSerif", true, false, GameScreenLayout.scale(9)));
+        img.drawString("STEP", STEP_BTN_X + GameScreenLayout.scale(9), STEP_BTN_Y + GameScreenLayout.scale(11));
     }
 }

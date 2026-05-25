@@ -66,10 +66,10 @@ public class Parser {
     private Statement parseStatement() {
         Lexer.Token t = peek();
         switch (t.type) {
-            case MOVE_UP:    advance(); return new MoveStatement(MoveStatement.Direction.UP);
-            case MOVE_DOWN:  advance(); return new MoveStatement(MoveStatement.Direction.DOWN);
-            case MOVE_LEFT:  advance(); return new MoveStatement(MoveStatement.Direction.LEFT);
-            case MOVE_RIGHT: advance(); return new MoveStatement(MoveStatement.Direction.RIGHT);
+            case MOVE_UP:    advance(); return new MoveStatement(MoveStatement.Direction.UP, t.line);
+            case MOVE_DOWN:  advance(); return new MoveStatement(MoveStatement.Direction.DOWN, t.line);
+            case MOVE_LEFT:  advance(); return new MoveStatement(MoveStatement.Direction.LEFT, t.line);
+            case MOVE_RIGHT: advance(); return new MoveStatement(MoveStatement.Direction.RIGHT, t.line);
             case REPEAT:     return parseRepeat();
             default:
                 throw new ParseError("Expected a statement, got '" + t.raw + "'", t.line);

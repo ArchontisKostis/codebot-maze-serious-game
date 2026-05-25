@@ -1,20 +1,18 @@
-import greenfoot.*;  // (World, Actor, GreenfootImage, Greenfoot and MouseInfo)
+import greenfoot.Actor;
+import greenfoot.Color;
+import greenfoot.GreenfootImage;
 
-/**
- * Write a description of class Goal here.
- * 
- * @author (your name) 
- * @version (a version number or a date)
- */
 public class Goal extends Actor {
 
     public Goal() {
-        int s = GameAreaConfig.TILE_SIZE_PX;
-        GreenfootImage img = new GreenfootImage(s, s);
-        img.setColor(new Color(40, 200, 90));
-        img.fill();
-        img.setColor(new Color(20, 120, 50));
-        img.drawRect(0, 0, s - 1, s - 1);
-        setImage(img);
+        int size = GameAreaConfig.TILE_SIZE_PX;
+        GreenfootImage image = new GreenfootImage(size, size);
+        image.setColor(new Color(70, 160, 90));
+        image.fill();
+        image.setColor(new Color(35, 95, 45));
+        image.drawRect(0, 0, size - 1, size - 1);
+        image.setColor(Color.WHITE);
+        image.drawString("G", size / 3, (size * 2) / 3);
+        setImage(image);
     }
 }

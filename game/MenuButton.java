@@ -1,24 +1,76 @@
 import greenfoot.*;
 
-/**
- * Write a description of class MenuButton here.
- * 
- * @author (your name) 
- * @version (a version number or a date)
- */
-public class MenuButton extends Actor
-{
-    private Runnable action;
+public class MenuButton extends Actor {
+    private final Runnable action;
+    private final int fixedWidth;
 
     public MenuButton(String text, Runnable action) {
-        this.action = action;
-        int fontSize = (int) Math.round(24 * GameScreenLayout.UI_SCALE);
-        setImage(new GreenfootImage(text, fontSize, Color.BLACK, Color.LIGHT_GRAY));
+        this(text, action, GameScreenLayout.scale(156));
     }
 
+    public MenuButton(String text, Runnable action, int width) {
+        this.action = action;
+        this.fixedWidth = width;
+        setImage(createImage(text));
+    }
+
+    @Override
     public void act() {
         if (Greenfoot.mouseClicked(this)) {
             action.run();
         }
+    }
+
+    private GreenfootImage createImage(String text) {
+        int fontSize = GameScreenLayout.scale(16);
+        int width = fixedWidth;
+        int height = GameScreenLayout.scale(36);
+        GreenfootImage image = new GreenfootImage(width, height);
+
+        image.setColor(new Color(238, 239, 232));
+        image.fillRect(0, 0, width, height);
+        image.setColor(new Color(42, 50, 58));
+        image.drawRect(0, 0, width - 1, height - 1);
+        image.drawRect(1, 1, width - 3, height - 3);
+
+        image.setColor(new Color(42, 50, 58));
+        image.setFont(new Font("SansSerif", true, false, fontSize));
+        // Render the text to a temporary image so we can measure it exactly,
+        // then draw that image centered in the button.
+        GreenfootImage textImg = new GreenfootImage(text, fontSize, new Color(42, 50, 58), new Color(0,0,0,0));
+        int textDrawX = (width - textImg.getWidth()) / 2;
+        int textDrawY = (height - textImg.getHeight()) / 2;
+
+        if ("RUN".equals(text)) {
+            int iconX = GameScreenLayout.scale(14);
+            int iconY = GameScreenLayout.scale(10);
+            drawRunIcon(image, iconX, iconY);
+            // Shift the text a bit to the right of the icon but keep the whole label visually centered
+            int shiftedX = Math.max(textDrawX, iconX + GameScreenLayout.scale(20));
+            image.drawImage(textImg, shiftedX, textDrawY);
+        } else {
+            image.drawImage(textImg, textDrawX, textDrawY);
+        }
+        return image;
+    }
+
+    private void drawRunIcon(GreenfootImage image, int x, int y) {
+        int size = GameScreenLayout.scale(16);
+        int[] xPoints = { x, x, x + size };
+        int[] yPoints = { y, y + size, y + size / 2 };
+
+        image.setColor(new Color(56, 168, 94));
+        image.fillPolygon(xPoints, yPoints, 3);
+        image.setColor(new Color(24, 96, 52));
+        image.drawPolygon(xPoints, yPoints, 3);
+    }
+
+    private int buttonWidth(String text) {
+        return fixedWidth;
+    }
+
+    private int textX(String text, int width) {
+        int approxTextWidth = text.length() * GameScreenLayout.scale(9);
+        return Math.max(GameScreenLayout.scale(10), (width - approxTextWidth) / 2);
     }
 }

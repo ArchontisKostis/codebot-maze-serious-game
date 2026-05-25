@@ -16,6 +16,8 @@ public class RobotActor extends Actor {
     private int homeCol;
     private int homeRow;
     private boolean goalAnnouncedThisRun;
+    private boolean autoRunning;
+    private boolean stepping;
 
     public RobotActor() {
         applyTileSizedSprite();
@@ -32,36 +34,61 @@ public class RobotActor extends Actor {
     /** Forces the sprite to exactly one tile ({@link GameAreaConfig#TILE_SIZE_PX}). */
     private void applyTileSizedSprite() {
         int s = GameAreaConfig.TILE_SIZE_PX;
-        GreenfootImage img = getImage();
-        if (img != null && img.getWidth() > 0) {
-            img = new GreenfootImage(img);
-            img.scale(s, s);
-        } else {
-            img = new GreenfootImage(s, s);
-            img.setColor(new Color(80, 200, 255));
-            img.fill();
-            img.setColor(Color.WHITE);
-            img.drawRect(0, 0, s - 1, s - 1);
-        }
+        GreenfootImage img = null;
+        img = new GreenfootImage("robot/robot.png");
+
         setImage(img);
     }
 
     @Override
     public void act() {
-        if (!interpreter.isRunning()) return;
+        if (!autoRunning || !interpreter.isRunning()) return;
+        advanceOneStep(true);
+    }
 
+    public void startStepping(Program program) {
+        if (interpreter.isRunning()) return;
+        resetToHome();
+        goalAnnouncedThisRun = false;
+        autoRunning = false;
+        stepping = true;
+        executionStartTime = System.currentTimeMillis();
+        interpreter.load(program);
+        world().logToTerminal("~ # Step debugger ready");
+    }
+
+    public void stepOnce() {
+        if (autoRunning || !interpreter.isRunning()) return;
+        advanceOneStep(false);
+        if (!interpreter.isRunning()) {
+            stepping = false;
+        }
+    }
+
+    public boolean isStepping() {
+        return stepping && interpreter.isRunning();
+    }
+
+    private void advanceOneStep(boolean delayAfterMove) {
         MoveStatement move = interpreter.next();
 
         if (move == null) {
+            world().clearExecutingLine();
+            autoRunning = false;
+            stepping = false;
             long elapsed = System.currentTimeMillis() - executionStartTime;
             world().logToTerminal("~ # Done in " + elapsed + " ms");
+            world().onProgramEndedWithoutGoal();
             return;
         }
 
+        world().showExecutingLine(move.sourceLine);
         world().logToTerminal("~ # " + move.label());
         executeMove(move.direction);
 
-        Greenfoot.delay(Settings.getAnimationDelay());
+        if (delayAfterMove) {
+            Greenfoot.delay(Settings.getAnimationDelay());
+        }
     }
 
     /**
@@ -78,9 +105,15 @@ public class RobotActor extends Actor {
 
     /** Teleports the robot back to its level starting tile. */
     public void resetToHome() {
+        interpreter.halt();
+        autoRunning = false;
+        stepping = false;
         tileCol = homeCol;
         tileRow = homeRow;
         goalAnnouncedThisRun = false;
+        if (getWorld() != null) {
+            world().clearExecutingLine();
+        }
         syncPixelsFromTile();
     }
 
@@ -88,6 +121,8 @@ public class RobotActor extends Actor {
         if (interpreter.isRunning()) return;
         resetToHome();
         goalAnnouncedThisRun = false;
+        autoRunning = true;
+        stepping = false;
         executionStartTime = System.currentTimeMillis();
         interpreter.load(program);
         world().logToTerminal("~ # Running...");
@@ -120,10 +155,15 @@ public class RobotActor extends Actor {
         TileMap map = world().getTileMap();
 
         if (map == null || !map.isWalkable(nextCol, nextRow)) {
+            interpreter.halt();
+            autoRunning = false;
+            stepping = false;
             if (map == null || !GameAreaConfig.isInsideGrid(nextCol, nextRow)) {
                 world().logToTerminal("~ # [!] Can't leave the game area");
+                world().onProgramBlocked("The robot tried to leave the game area.");
             } else {
                 world().logToTerminal("~ # [!] Blocked by obstacle");
+                world().onProgramBlocked("The robot ran into an obstacle.");
             }
             return;
         }
@@ -139,6 +179,8 @@ public class RobotActor extends Actor {
         if (map.isGoalAt(tileCol, tileRow) && !goalAnnouncedThisRun) {
             goalAnnouncedThisRun = true;
             interpreter.halt();
+            autoRunning = false;
+            stepping = false;
             world().logToTerminal("~ # *** LEVEL COMPLETE! ***");
             world().onGoalReached();
         }
