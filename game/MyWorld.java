@@ -209,7 +209,7 @@ public class MyWorld extends World {
     private void advanceToNextLevel() {
         if (LevelManager.hasNextLevel()) {
             LevelManager.advanceLevel();
-            Greenfoot.setWorld(new MyWorld(LevelManager.getCurrentLevel()));
+            Greenfoot.setWorld(new LoadingWorld(() -> new MyWorld(LevelManager.getCurrentLevel())));
         } else {
             Greenfoot.setWorld(new FinalClassificationWorld());
         }

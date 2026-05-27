@@ -29,7 +29,7 @@ public class HomeWorld extends World {
         int cx = GameScreenLayout.WORLD_WIDTH / 2;
         addObject(new MenuButton("START", () -> {
                 LevelManager.resetProgress();
-                Greenfoot.setWorld(new MyWorld(LevelManager.getCurrentLevel()));
+                Greenfoot.setWorld(new LoadingWorld(() -> new IntroWorld()));
             }),
             cx, GameScreenLayout.scale(376));
         addObject(new MenuButton("SETTINGS", this::showSettingsPopup),
