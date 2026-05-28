@@ -34,13 +34,23 @@ public class CodeEditor extends Actor {
     private static final int FONT_SIZE  = (int) Math.round(12 * GameScreenLayout.UI_SCALE);
     private static final int TITLE_H    = (int) Math.round(20 * GameScreenLayout.UI_SCALE);
     private static final int LINE_H     = (int) Math.round(16 * GameScreenLayout.UI_SCALE);
-    private static final int PAD_LEFT   = (int) Math.round(26 * GameScreenLayout.UI_SCALE);
+    private static final int PAD_LEFT   = (int) Math.round(32 * GameScreenLayout.UI_SCALE);
     private static final int PAD_TOP    = (int) Math.round(6 * GameScreenLayout.UI_SCALE);
     private static final int CHAR_W     = (int) Math.round(7 * GameScreenLayout.UI_SCALE);
+    private static final int LINE_NUMBER_X = GameScreenLayout.scale(14);
+    private static final Color ACTIVE_LINE_BG = new Color(255, 255, 255, 20);
+    private static final int CONTENT_BOTTOM_Y = H - GameScreenLayout.scale(4);
+    private static final int SCROLLBAR_W = GameScreenLayout.scale(6);
+    private static final int SCROLLBAR_RIGHT_PAD = GameScreenLayout.scale(4);
+    private static final int SCROLLBAR_TOP = TITLE_H + GameScreenLayout.scale(6);
+    private static final int SCROLLBAR_BOTTOM = H - GameScreenLayout.scale(9);
+    private static final int SCROLLBAR_MIN_THUMB_H = GameScreenLayout.scale(14);
     private static final int STEP_BTN_W = GameScreenLayout.scale(48);
     private static final int STEP_BTN_H = GameScreenLayout.scale(15);
-    private static final int STEP_BTN_X = W - STEP_BTN_W - GameScreenLayout.scale(6);
-    private static final int STEP_BTN_Y = GameScreenLayout.scale(3);
+    private static final int STEP_BTN_X = W - STEP_BTN_W - GameScreenLayout.scale(8);
+    private static final int STEP_BTN_Y = GameScreenLayout.scale(6);
+    private static final GreenfootImage EDITOR_BACKGROUND = loadEditorBackground();
+    private static final GreenfootImage STEP_BUTTON_ART = loadStepButtonArt();
 
     /** Toggles every {@link #BLINK_INTERVAL} acts when the user is idle so the caret blinks. */
     private static final int BLINK_INTERVAL = 18;
@@ -59,6 +69,9 @@ public class CodeEditor extends Actor {
     private int  blinkTick    = 0;
     private boolean caretVisible = true;
     private int executingLine = -1;
+    private int firstVisibleLine = 0;
+    private boolean scrollbarDragging = false;
+    private int scrollbarDragOffsetY = 0;
     private final Runnable stepAction;
 
     // ── Constructor ───────────────────────────────────────────────────────────
@@ -70,6 +83,30 @@ public class CodeEditor extends Actor {
     public CodeEditor(Runnable stepAction) {
         this.stepAction = stepAction;
         redraw();
+    }
+
+    private static GreenfootImage loadEditorBackground() {
+        try {
+            GreenfootImage bg = new GreenfootImage("ui/code-editor-bg.png");
+            if (bg.getWidth() != W || bg.getHeight() != H) {
+                bg.scale(W, H);
+            }
+            return bg;
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return null;
+        }
+    }
+
+    private static GreenfootImage loadStepButtonArt() {
+        try {
+            GreenfootImage art = new GreenfootImage("ui/step-btn.png");
+            if (art.getWidth() != STEP_BTN_W || art.getHeight() != STEP_BTN_H) {
+                art.scale(STEP_BTN_W, STEP_BTN_H);
+            }
+            return art;
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return null;
+        }
     }
 
     // ── Greenfoot lifecycle ───────────────────────────────────────────────────
@@ -86,10 +123,6 @@ public class CodeEditor extends Actor {
     }
 
     private void handleMouse() {
-        if (stepAction == null || !Greenfoot.mouseClicked(this)) {
-            return;
-        }
-
         MouseInfo mouse = Greenfoot.getMouseInfo();
         if (mouse == null) {
             return;
@@ -97,8 +130,41 @@ public class CodeEditor extends Actor {
 
         int localX = mouse.getX() - (getX() - W / 2);
         int localY = mouse.getY() - (getY() - H / 2);
-        if (insideStepButton(localX, localY)) {
+
+        if (Greenfoot.mouseClicked(this) && stepAction != null && insideStepButton(localX, localY)) {
             stepAction.run();
+            return;
+        }
+
+        ScrollbarMetrics scroll = computeScrollbarMetrics(linesSnapshot().length);
+        if (!scroll.show) {
+            if (scrollbarDragging) {
+                scrollbarDragging = false;
+            }
+            return;
+        }
+
+        if (Greenfoot.mousePressed(this)) {
+            if (insideScrollbarThumb(localX, localY, scroll)) {
+                scrollbarDragging = true;
+                scrollbarDragOffsetY = localY - scroll.thumbY;
+                return;
+            }
+            if (insideScrollbarTrack(localX, localY, scroll)) {
+                if (localY < scroll.thumbY) {
+                    pageScroll(-1, scroll.visibleLineCount, scroll.totalLines);
+                } else if (localY > scroll.thumbY + scroll.thumbH) {
+                    pageScroll(1, scroll.visibleLineCount, scroll.totalLines);
+                }
+            }
+        }
+
+        if (scrollbarDragging && Greenfoot.mouseDragged(this)) {
+            updateScrollFromDrag(localY, scroll);
+        }
+
+        if (scrollbarDragging && Greenfoot.mouseDragEnded(this)) {
+            scrollbarDragging = false;
         }
     }
 
@@ -120,6 +186,8 @@ public class CodeEditor extends Actor {
         cursorPos = 0;
         goalColumn = 0;
         executingLine = -1;
+        firstVisibleLine = 0;
+        scrollbarDragging = false;
         resetCaretBlink();
         redraw();
     }
@@ -130,6 +198,9 @@ public class CodeEditor extends Actor {
             return;
         }
         executingLine = lineNumber;
+        if (executingLine > 0) {
+            ensureLineVisible(executingLine - 1, linesSnapshot().length, visibleLineCapacity());
+        }
         redraw();
     }
 
@@ -168,6 +239,7 @@ public class CodeEditor extends Actor {
                     text.deleteCharAt(cursorPos - 1);
                     cursorPos--;
                     syncGoalColumnFromCursor();
+                    ensureCursorVisible();
                     redraw();
                     return true;
                 }
@@ -177,6 +249,7 @@ public class CodeEditor extends Actor {
                 text.insert(cursorPos, '\n');
                 cursorPos++;
                 syncGoalColumnFromCursor();
+                ensureCursorVisible();
                 redraw();
                 return true;
 
@@ -184,6 +257,7 @@ public class CodeEditor extends Actor {
                 text.insert(cursorPos, ' ');
                 cursorPos++;
                 syncGoalColumnFromCursor();
+                ensureCursorVisible();
                 redraw();
                 return true;
 
@@ -191,6 +265,7 @@ public class CodeEditor extends Actor {
                 text.insert(cursorPos, "  ");   // two-space indent
                 cursorPos += 2;
                 syncGoalColumnFromCursor();
+                ensureCursorVisible();
                 redraw();
                 return true;
 
@@ -198,6 +273,7 @@ public class CodeEditor extends Actor {
             case "del":
                 if (cursorPos < text.length()) {
                     text.deleteCharAt(cursorPos);
+                    ensureCursorVisible();
                     redraw();
                     return true;
                 }
@@ -243,6 +319,7 @@ public class CodeEditor extends Actor {
         text.insert(cursorPos, c);
         cursorPos++;
         syncGoalColumnFromCursor();
+        ensureCursorVisible();
         redraw();
     }
 
@@ -297,6 +374,7 @@ public class CodeEditor extends Actor {
         }
         cursorPos--;
         syncGoalColumnFromCursor();
+        ensureCursorVisible();
         redraw();
         return true;
     }
@@ -307,6 +385,7 @@ public class CodeEditor extends Actor {
         }
         cursorPos++;
         syncGoalColumnFromCursor();
+        ensureCursorVisible();
         redraw();
         return true;
     }
@@ -322,6 +401,7 @@ public class CodeEditor extends Actor {
                 }
                 int col = Math.min(goalColumn, lines[i - 1].length());
                 cursorPos = offsetForLineColumn(i - 1, col);
+                ensureCursorVisible();
                 redraw();
                 return true;
             }
@@ -341,6 +421,7 @@ public class CodeEditor extends Actor {
                 }
                 int col = Math.min(goalColumn, lines[i + 1].length());
                 cursorPos = offsetForLineColumn(i + 1, col);
+                ensureCursorVisible();
                 redraw();
                 return true;
             }
@@ -357,6 +438,7 @@ public class CodeEditor extends Actor {
             if (cursorPos <= counted + len) {
                 cursorPos = counted;
                 syncGoalColumnFromCursor();
+                ensureCursorVisible();
                 redraw();
                 return true;
             }
@@ -373,6 +455,7 @@ public class CodeEditor extends Actor {
             if (cursorPos <= counted + len) {
                 cursorPos = counted + len;
                 syncGoalColumnFromCursor();
+                ensureCursorVisible();
                 redraw();
                 return true;
             }
@@ -398,25 +481,22 @@ public class CodeEditor extends Actor {
     private void redraw() {
         GreenfootImage img = new GreenfootImage(W, H);
 
-        // Background
-        img.setColor(new Color(22, 22, 32));
+        img.setColor(Color.BLACK);
         img.fill();
 
-        // Border
-        img.setColor(new Color(70, 70, 160));
-        img.drawRect(0, 0, W - 1, H - 1);
+        if (EDITOR_BACKGROUND != null) {
+            img.drawImage(EDITOR_BACKGROUND, 0, 0);
+        }
 
-        // Title bar
-        img.setColor(new Color(45, 45, 85));
-        img.fillRect(0, 0, W, TITLE_H);
-        img.setColor(new Color(160, 160, 240));
-        img.setFont(new Font((int) Math.round(11 * GameScreenLayout.UI_SCALE)));
-        img.drawString("  CODE EDITOR", 2, TITLE_H - (int) Math.round(5 * GameScreenLayout.UI_SCALE));
         drawStepButton(img);
 
         // ── Split text into lines ─────────────────────────────────────────────
         String content  = text.toString();
         String[] lines  = content.split("\n", -1);
+        int totalLines = lines.length;
+        int visibleLineCount = visibleLineCapacity();
+        clampFirstVisibleLine(totalLines, visibleLineCount);
+        ScrollbarMetrics scroll = computeScrollbarMetrics(totalLines);
 
         // Resolve cursor → (line, col) in O(n)
         int cursorLine = 0;
@@ -435,19 +515,24 @@ public class CodeEditor extends Actor {
         // ── Draw lines (syntax-coloured via CodeSyntaxHighlighter + Lexer keywords) ──
         img.setFont(new Font("Monospaced", false, false, FONT_SIZE));
 
-        for (int i = 0; i < lines.length; i++) {
-            int baseY = TITLE_H + PAD_TOP + (i + 1) * LINE_H;
-            if (baseY > H - 4) break;  // out of visible area
+        int startLine = firstVisibleLine;
+        int endLine = Math.min(totalLines, startLine + visibleLineCount);
+        int contentRight = scroll.show ? scroll.trackX - GameScreenLayout.scale(4) : W - 2;
+
+        for (int i = startLine; i < endLine; i++) {
+            int row = i - startLine;
+            int baseY = TITLE_H + PAD_TOP + (row + 1) * LINE_H;
+            if (baseY > CONTENT_BOTTOM_Y) break;
 
             // Highlight the line the cursor is on
             if (i == cursorLine) {
-                img.setColor(new Color(38, 38, 60));
-                img.fillRect(1, baseY - LINE_H + 3, W - 2, LINE_H);
+                img.setColor(ACTIVE_LINE_BG);
+                img.fillRect(1, baseY - LINE_H + 3, contentRight - 1, LINE_H);
             }
 
             // Line number
             img.setColor(new Color(90, 90, 110));
-            img.drawString(String.valueOf(i + 1), 2, baseY);
+            img.drawString(String.valueOf(i + 1), LINE_NUMBER_X, baseY);
 
             if (i + 1 == executingLine) {
                 int dotSize = Math.max(5, GameScreenLayout.scale(7));
@@ -466,10 +551,160 @@ public class CodeEditor extends Actor {
             }
         }
 
+        drawScrollbar(img, scroll);
+
         setImage(img);
     }
 
+    private int visibleLineCapacity() {
+        int firstBaselineY = TITLE_H + PAD_TOP + LINE_H;
+        int drawableHeight = CONTENT_BOTTOM_Y - firstBaselineY;
+        return Math.max(1, drawableHeight / LINE_H + 1);
+    }
+
+    private void clampFirstVisibleLine(int totalLines, int visibleLineCount) {
+        int maxFirst = Math.max(0, totalLines - visibleLineCount);
+        if (firstVisibleLine < 0) {
+            firstVisibleLine = 0;
+        } else if (firstVisibleLine > maxFirst) {
+            firstVisibleLine = maxFirst;
+        }
+    }
+
+    private void ensureCursorVisible() {
+        String[] lines = linesSnapshot();
+        int cursorLine = lineIndexForCursor(lines);
+        int visibleLineCount = visibleLineCapacity();
+        ensureLineVisible(cursorLine, lines.length, visibleLineCount);
+    }
+
+    private void ensureLineVisible(int lineIdx, int totalLines, int visibleLineCount) {
+        clampFirstVisibleLine(totalLines, visibleLineCount);
+        if (lineIdx < firstVisibleLine) {
+            firstVisibleLine = lineIdx;
+            clampFirstVisibleLine(totalLines, visibleLineCount);
+            return;
+        }
+        int lastVisible = firstVisibleLine + visibleLineCount - 1;
+        if (lineIdx > lastVisible) {
+            firstVisibleLine = lineIdx - visibleLineCount + 1;
+            clampFirstVisibleLine(totalLines, visibleLineCount);
+        }
+    }
+
+    private int lineIndexForCursor(String[] lines) {
+        int counted = 0;
+        for (int i = 0; i < lines.length; i++) {
+            int len = lines[i].length();
+            if (cursorPos <= counted + len) {
+                return i;
+            }
+            counted += len + 1;
+        }
+        return Math.max(0, lines.length - 1);
+    }
+
+    private void pageScroll(int direction, int visibleLineCount, int totalLines) {
+        firstVisibleLine += direction * Math.max(1, visibleLineCount - 1);
+        clampFirstVisibleLine(totalLines, visibleLineCount);
+        redraw();
+    }
+
+    private void updateScrollFromDrag(int localY, ScrollbarMetrics scroll) {
+        if (scroll.trackTravel <= 0 || scroll.maxFirstLine <= 0) {
+            return;
+        }
+        int unclampedThumbY = localY - scrollbarDragOffsetY;
+        int clampedThumbY = Math.max(scroll.trackY, Math.min(scroll.trackY + scroll.trackTravel, unclampedThumbY));
+        int relative = clampedThumbY - scroll.trackY;
+        firstVisibleLine = (int) Math.round((relative * (double) scroll.maxFirstLine) / scroll.trackTravel);
+        clampFirstVisibleLine(scroll.totalLines, scroll.visibleLineCount);
+        redraw();
+    }
+
+    private boolean insideScrollbarTrack(int x, int y, ScrollbarMetrics scroll) {
+        return scroll.show
+            && x >= scroll.trackX && x <= scroll.trackX + scroll.trackW
+            && y >= scroll.trackY && y <= scroll.trackY + scroll.trackH;
+    }
+
+    private boolean insideScrollbarThumb(int x, int y, ScrollbarMetrics scroll) {
+        return scroll.show
+            && x >= scroll.trackX && x <= scroll.trackX + scroll.trackW
+            && y >= scroll.thumbY && y <= scroll.thumbY + scroll.thumbH;
+    }
+
+    private ScrollbarMetrics computeScrollbarMetrics(int totalLines) {
+        int visibleLineCount = visibleLineCapacity();
+        int maxFirstLine = Math.max(0, totalLines - visibleLineCount);
+        boolean show = totalLines > visibleLineCount;
+        int trackX = W - SCROLLBAR_RIGHT_PAD - SCROLLBAR_W;
+        int trackY = SCROLLBAR_TOP;
+        int trackH = Math.max(1, SCROLLBAR_BOTTOM - SCROLLBAR_TOP);
+        int thumbH = trackH;
+        if (show) {
+            int scaledThumb = (int) Math.round((visibleLineCount * (double) trackH) / totalLines);
+            thumbH = Math.max(SCROLLBAR_MIN_THUMB_H, Math.min(trackH, scaledThumb));
+        }
+        int trackTravel = Math.max(0, trackH - thumbH);
+        int thumbY = trackY;
+        if (show && maxFirstLine > 0 && trackTravel > 0) {
+            thumbY += (int) Math.round((firstVisibleLine * (double) trackTravel) / maxFirstLine);
+        }
+        return new ScrollbarMetrics(show, totalLines, visibleLineCount, maxFirstLine,
+            trackX, trackY, SCROLLBAR_W, trackH, thumbY, thumbH, trackTravel);
+    }
+
+    private void drawScrollbar(GreenfootImage img, ScrollbarMetrics scroll) {
+        if (!scroll.show) {
+            return;
+        }
+        img.setColor(new Color(20, 30, 50, 170));
+        img.fillRect(scroll.trackX, scroll.trackY, scroll.trackW, scroll.trackH);
+        img.setColor(new Color(55, 88, 145, 200));
+        img.drawRect(scroll.trackX, scroll.trackY, scroll.trackW - 1, scroll.trackH - 1);
+
+        img.setColor(new Color(145, 185, 245, 220));
+        img.fillRect(scroll.trackX + 1, scroll.thumbY, Math.max(1, scroll.trackW - 2), scroll.thumbH);
+        img.setColor(new Color(205, 225, 255, 230));
+        img.drawRect(scroll.trackX + 1, scroll.thumbY, Math.max(1, scroll.trackW - 2), Math.max(1, scroll.thumbH - 1));
+    }
+
+    private static final class ScrollbarMetrics {
+        final boolean show;
+        final int totalLines;
+        final int visibleLineCount;
+        final int maxFirstLine;
+        final int trackX;
+        final int trackY;
+        final int trackW;
+        final int trackH;
+        final int thumbY;
+        final int thumbH;
+        final int trackTravel;
+
+        ScrollbarMetrics(boolean show, int totalLines, int visibleLineCount, int maxFirstLine,
+            int trackX, int trackY, int trackW, int trackH, int thumbY, int thumbH, int trackTravel) {
+            this.show = show;
+            this.totalLines = totalLines;
+            this.visibleLineCount = visibleLineCount;
+            this.maxFirstLine = maxFirstLine;
+            this.trackX = trackX;
+            this.trackY = trackY;
+            this.trackW = trackW;
+            this.trackH = trackH;
+            this.thumbY = thumbY;
+            this.thumbH = thumbH;
+            this.trackTravel = trackTravel;
+        }
+    }
+
     private void drawStepButton(GreenfootImage img) {
+        if (STEP_BUTTON_ART != null) {
+            img.drawImage(STEP_BUTTON_ART, STEP_BTN_X, STEP_BTN_Y);
+            return;
+        }
+
         img.setColor(new Color(68, 82, 130));
         img.fillRect(STEP_BTN_X, STEP_BTN_Y, STEP_BTN_W, STEP_BTN_H);
         img.setColor(new Color(140, 165, 235));

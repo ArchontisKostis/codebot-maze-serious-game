@@ -50,6 +50,9 @@ public class MyWorld extends World {
     /** Fits inside {@link GameScreenLayout#TERMINAL_H} with scaled fonts. */
     private static final int MAX_TERMINAL_LINES = 5;
     private static final int TERMINAL_LINE_H    = GameScreenLayout.scale(12);
+    private static final int TERMINAL_TEXT_OFFSET_X = GameScreenLayout.scale(14);
+    private static final int TERMINAL_TEXT_START_Y  = GameScreenLayout.scale(33);
+    private static final GreenfootImage TERMINAL_BACKGROUND = loadTerminalBackground();
 
     // ── State ─────────────────────────────────────────────────────────────────
 
@@ -97,6 +100,28 @@ public class MyWorld extends World {
         }
     }
 
+    private static GreenfootImage loadTerminalBackground() {
+        try {
+            GreenfootImage img = new GreenfootImage("ui/output_background.png");
+            if (img.getWidth() != TERMINAL_W || img.getHeight() != TERMINAL_H) {
+                img.scale(TERMINAL_W, TERMINAL_H);
+            }
+            return img;
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return null;
+        }
+    }
+
+    private static void drawTerminalBackground(GreenfootImage bg) {
+        if (TERMINAL_BACKGROUND != null) {
+            bg.drawImage(TERMINAL_BACKGROUND, TERMINAL_X, TERMINAL_Y);
+            return;
+        }
+
+        bg.setColor(new Color(36, 38, 46));
+        bg.fillRect(TERMINAL_X, TERMINAL_Y, TERMINAL_W, TERMINAL_H);
+    }
+
     // ── Setup ─────────────────────────────────────────────────────────────────
 
     private void drawStaticUI() {
@@ -107,13 +132,8 @@ public class MyWorld extends World {
         bg.setColor(Color.BLACK);
         bg.fill();
 
-        // Code editor strip (was default black / empty in the web player)
-        bg.setColor(new Color(26, 26, 38));
-        bg.fillRect(SCRIPT_AREA_X, SCRIPT_AREA_Y, SCRIPT_AREA_W, SCRIPT_AREA_H);
-
-        // Terminal — slightly lighter than pure black so it reads as a panel, not “void”
-        bg.setColor(new Color(36, 38, 46));
-        bg.fillRect(TERMINAL_X, TERMINAL_Y, TERMINAL_W, TERMINAL_H);
+        // Terminal panel (asset-backed when available)
+        drawTerminalBackground(bg);
 
         // Controls area — draw a dark panel background then overlay the controls
         // artwork slightly inset so it reads with padding.
@@ -440,22 +460,16 @@ public class MyWorld extends World {
     private void redrawTerminal() {
         GreenfootImage bg = getBackground();
 
-        // Clear terminal panel (same fill as {@link #drawStaticUI})
-        bg.setColor(new Color(36, 38, 46));
-        bg.fillRect(TERMINAL_X, TERMINAL_Y, TERMINAL_W, TERMINAL_H);
-
-        // Header
-        bg.setColor(new Color(120, 120, 120));
-        bg.setFont(new Font(GameScreenLayout.scale(11)));
-        bg.drawString("OUTPUT", TERMINAL_X + GameScreenLayout.scale(8), TERMINAL_Y + GameScreenLayout.scale(14));
+        // Repaint terminal shell before rendering dynamic log lines.
+        drawTerminalBackground(bg);
 
         // Log lines
         bg.setFont(new Font("Monospaced", false, false, GameScreenLayout.scale(11)));
         for (int i = 0; i < terminalLog.size(); i++) {
             bg.setColor(new Color(180, 240, 180));
             bg.drawString(terminalLog.get(i),
-                TERMINAL_X + GameScreenLayout.scale(8),
-                TERMINAL_Y + GameScreenLayout.scale(24) + i * TERMINAL_LINE_H);
+                TERMINAL_X + TERMINAL_TEXT_OFFSET_X,
+                TERMINAL_Y + TERMINAL_TEXT_START_Y + i * TERMINAL_LINE_H);
         }
     }
 
