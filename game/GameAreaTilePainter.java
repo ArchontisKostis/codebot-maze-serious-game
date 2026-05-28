@@ -1,5 +1,3 @@
-import greenfoot.Color;
-import greenfoot.Font;
 import greenfoot.GreenfootImage;
 import greenfoot.World;
 
@@ -28,12 +26,5 @@ public final class GameAreaTilePainter {
                 bg.drawImage(tile, x, y);
             }
         }
-
-        // Label (optional visual anchor)
-        bg.setColor(new Color(80, 80, 90));
-        bg.setFont(new Font(GameScreenLayout.scale(11)));
-        bg.drawString("GAME AREA",
-            MyWorld.GAME_AREA_MIN_X + GameScreenLayout.scale(10),
-            MyWorld.GAME_AREA_MIN_Y + GameScreenLayout.scale(16));
     }
 }

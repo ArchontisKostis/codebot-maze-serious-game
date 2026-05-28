@@ -474,12 +474,6 @@ public class MyWorld extends World {
         hudImg.scale(GameScreenLayout.WORLD_WIDTH, GameScreenLayout.HUD_STRIP_H);
             bg.drawImage(hudImg, 0, 0);
 
-        // Apply a subtle lightening tint so the HUD artwork reads brighter
-        // (use a low alpha white overlay). Adjust `tintAlpha` if needed.
-        int tintAlpha = 28; // 0-255; increase to make brighter
-        bg.setColor(new Color(255, 255, 255, tintAlpha));
-        bg.fillRect(0, 0, GameScreenLayout.WORLD_WIDTH, GameScreenLayout.HUD_STRIP_H);
-
         // Draw styled left-side labels (LEVEL / ATTEMPTS) using small text images so we can
         // measure and place them precisely. Colors tuned to match the provided sample.
         int yCenter = GameScreenLayout.HUD_STRIP_H / 2;
@@ -555,6 +549,9 @@ public class MyWorld extends World {
         GameAreaTilePainter.paintTileBackgrounds(this, map);
         TileActorLayer.spawn(this, map);
         robot.placeOnTile(startCol, startRow);
+        addObject(new GameAreaFrameOverlay(),
+            GameAreaConfig.GAME_AREA_WIDTH_PX / 2,
+            GAME_AREA_MIN_Y + GameAreaConfig.GAME_AREA_HEIGHT_PX / 2);
     }
 
     /** Clears a collected coin from the map and removes its actors. */
@@ -608,5 +605,22 @@ class ClearOutputButton extends Actor {
         image.drawLine(binX + 2, binY + 3, binX + 2, binY + binH - 1);
         image.drawLine(binX + binW - 3, binY + 3, binX + binW - 3, binY + binH - 1);
         return image;
+    }
+}
+
+class GameAreaFrameOverlay extends Actor {
+    private static final String FRAME_IMAGE_PATH = "ui/game_area_frame.png";
+
+    GameAreaFrameOverlay() {
+        setImage(createImage());
+    }
+
+    private GreenfootImage createImage() {
+        GreenfootImage frame = new GreenfootImage(FRAME_IMAGE_PATH);
+        if (frame.getWidth() != GameAreaConfig.GAME_AREA_WIDTH_PX
+                || frame.getHeight() != GameAreaConfig.GAME_AREA_HEIGHT_PX) {
+            frame.scale(GameAreaConfig.GAME_AREA_WIDTH_PX, GameAreaConfig.GAME_AREA_HEIGHT_PX);
+        }
+        return frame;
     }
 }
