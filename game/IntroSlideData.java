@@ -1,9 +1,9 @@
 public class IntroSlideData {
-    public final String image;
-    public final String text;
+    public final String[] images;
+    public final String   text;
 
-    public IntroSlideData(String image, String text) {
-        this.image = image;
-        this.text = text;
+    public IntroSlideData(String[] images, String text) {
+        this.images = images;
+        this.text   = text;
     }
 }

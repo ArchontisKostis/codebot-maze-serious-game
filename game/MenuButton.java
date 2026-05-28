@@ -14,6 +14,33 @@ public class MenuButton extends Actor {
         setImage(createImage(text));
     }
 
+    /** Construct a button from an existing image, scaled to the given size. */
+    public MenuButton(GreenfootImage art, Runnable action, int width, int height) {
+        this.action = action;
+        this.fixedWidth = width;
+        GreenfootImage imgCopy = new GreenfootImage(art);
+        imgCopy.scale(width, height);
+        setImage(imgCopy);
+    }
+
+    /** Construct a button by loading an image filename (path relative to scenario). */
+    public MenuButton(String imagePath, Runnable action, int width, int height, boolean isImage) {
+        this.action = action;
+        this.fixedWidth = width;
+        GreenfootImage img = null;
+        try {
+            img = new GreenfootImage(imagePath);
+        } catch (IllegalArgumentException e) {
+            img = null;
+        }
+        if (img != null) {
+            img.scale(width, height);
+            setImage(img);
+        } else {
+            setImage(createImage(""));
+        }
+    }
+
     @Override
     public void act() {
         if (Greenfoot.mouseClicked(this)) {

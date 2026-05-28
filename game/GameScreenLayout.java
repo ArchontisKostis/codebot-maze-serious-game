@@ -32,7 +32,7 @@ public final class GameScreenLayout {
     public static final int TILE_SIZE_PX = scale(25);
 
     /** Thin strip at y=0 that holds the HUD (level number, attempt counter). */
-    public static final int HUD_STRIP_H = scale(20);
+    public static final int HUD_STRIP_H = 33;
 
     public static final int SCRIPT_AREA_X = GAME_AREA_WIDTH_PX;
     public static final int SCRIPT_AREA_W = scale(200);

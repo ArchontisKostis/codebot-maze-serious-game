@@ -66,17 +66,6 @@ public class MyWorld extends World {
     private boolean introOverlayActive = false;
     private boolean programEndOverlayActive = false;
 
-    private static final int INTRO_CARD_W = GameScreenLayout.scale(620);
-    private static final int INTRO_CARD_H = GameScreenLayout.scale(420);
-    private static final int INTRO_CARD_X = (GameScreenLayout.WORLD_WIDTH - INTRO_CARD_W) / 2;
-    private static final int INTRO_CARD_Y = GameScreenLayout.scale(78);
-    private static final int INTRO_BUTTON_Y = INTRO_CARD_Y + INTRO_CARD_H - GameScreenLayout.scale(48);
-    private static final int INTRO_NEXT_X = INTRO_CARD_X + INTRO_CARD_W - GameScreenLayout.scale(130);
-    private static final int INTRO_BACK_X = INTRO_CARD_X + GameScreenLayout.scale(26);
-    private static final int INTRO_BUTTON_W = GameScreenLayout.scale(104);
-    private static final int INTRO_BUTTON_H = GameScreenLayout.scale(32);
-    private static final int INTRO_STEP_COUNT = 3;
-
     private static final int PROGRAM_STOP_CARD_W = GameScreenLayout.scale(420);
     private static final int PROGRAM_STOP_CARD_H = GameScreenLayout.scale(210);
     private static final int PROGRAM_STOP_CARD_X = (GameScreenLayout.WORLD_WIDTH - PROGRAM_STOP_CARD_W) / 2;
@@ -98,7 +87,14 @@ public class MyWorld extends World {
         level.setup(this);
         redrawTerminal();
         redrawHUD();
-        showLevelIntro();
+
+        int levelNumber = LevelManager.getCurrentLevelNumber();
+        OnboardFlow onboardFlow = OnboardRegistry.forLevel(levelNumber);
+        if (onboardFlow != null) {
+            addObject(new OnboardOverlay(onboardFlow, this),
+                GameScreenLayout.WORLD_WIDTH / 2,
+                GameScreenLayout.WORLD_HEIGHT / 2);
+        }
     }
 
     // ── Setup ─────────────────────────────────────────────────────────────────
@@ -119,12 +115,27 @@ public class MyWorld extends World {
         bg.setColor(new Color(36, 38, 46));
         bg.fillRect(TERMINAL_X, TERMINAL_Y, TERMINAL_W, TERMINAL_H);
 
-        // Controls area — dark blue panel
-        bg.setColor(new Color(35, 35, 55));
+        // Controls area — draw a dark panel background then overlay the controls
+        // artwork slightly inset so it reads with padding.
+        GreenfootImage controlsImg = null;
+        try {
+            controlsImg = new GreenfootImage("ui/controls-bg.png");
+        } catch (IllegalArgumentException | NullPointerException e) {
+            controlsImg = null;
+        }
+
+        // Panel base color as requested (#010412)
+        bg.setColor(new Color(1, 4, 18));
         bg.fillRect(CONTROLS_X, CONTROLS_Y, CONTROLS_W, CONTROLS_H);
-        bg.setColor(new Color(140, 140, 210));
-        bg.setFont(new Font(GameScreenLayout.scale(11)));
-        bg.drawString("CONTROLS", CONTROLS_X + GameScreenLayout.scale(8), CONTROLS_Y + GameScreenLayout.scale(14));
+
+        if (controlsImg != null) {
+            int imgW = (int)(CONTROLS_W * 0.90);
+            int imgH = (int)(CONTROLS_H * 0.90);
+            controlsImg.scale(imgW, imgH);
+            int imgX = CONTROLS_X + (CONTROLS_W - imgW) / 2;
+            int imgY = CONTROLS_Y + (CONTROLS_H - imgH) / 2;
+            bg.drawImage(controlsImg, imgX, imgY);
+        }
     }
 
     private void createActors() {
@@ -146,14 +157,41 @@ public class MyWorld extends World {
         int buttonGap = GameScreenLayout.scale(10);
         int buttonRowW = runButtonW + buttonGap + resetButtonW;
         int buttonRowX = CONTROLS_X + (CONTROLS_W - buttonRowW) / 2;
-        int buttonY = CONTROLS_Y + GameScreenLayout.scale(62);
+        // Nudge controls buttons slightly higher in the panel
+        int buttonY = CONTROLS_Y + GameScreenLayout.scale(46);
 
-        addObject(new MenuButton("RUN", () -> runScript(), runButtonW),
-            buttonRowX + runButtonW / 2,
-            buttonY);
-        addObject(new MenuButton("RESET", () -> resetEditor(), resetButtonW),
-            buttonRowX + runButtonW + buttonGap + resetButtonW / 2,
-            buttonY);
+        int buttonH = GameScreenLayout.scale(36);
+
+        // Try to load artwork for RUN and RESET; fall back to drawn buttons if missing.
+        GreenfootImage runImg = null;
+        GreenfootImage resetImg = null;
+        try { runImg = new GreenfootImage("ui/run-btn.png"); } catch (IllegalArgumentException e) { runImg = null; }
+        try { resetImg = new GreenfootImage("ui/reset-btn.png"); } catch (IllegalArgumentException e) { resetImg = null; }
+
+        // Make artwork buttons a bit smaller than the allocated slot so they have padding.
+        int imgRunW = (int)(runButtonW * 0.80);
+        int imgResetW = (int)(resetButtonW * 0.80);
+        int imgH = (int)(buttonH * 0.90);
+
+        if (runImg != null) {
+            addObject(new MenuButton(runImg, () -> runScript(), imgRunW, imgH),
+                buttonRowX + runButtonW / 2,
+                buttonY);
+        } else {
+            addObject(new MenuButton("RUN", () -> runScript(), runButtonW),
+                buttonRowX + runButtonW / 2,
+                buttonY);
+        }
+
+        if (resetImg != null) {
+            addObject(new MenuButton(resetImg, () -> resetEditor(), imgResetW, imgH),
+                buttonRowX + runButtonW + buttonGap + resetButtonW / 2,
+                buttonY);
+        } else {
+            addObject(new MenuButton("RESET", () -> resetEditor(), resetButtonW),
+                buttonRowX + runButtonW + buttonGap + resetButtonW / 2,
+                buttonY);
+        }
 
         addObject(new ClearOutputButton(() -> clearTerminal()),
             TERMINAL_X + TERMINAL_W - GameScreenLayout.scale(22),
@@ -380,136 +418,8 @@ public class MyWorld extends World {
             GameScreenLayout.WORLD_HEIGHT / 2);
     }
 
-    private void showLevelIntro() {
-        introOverlayActive = true;
-        final int levelNumber = LevelManager.getCurrentLevelNumber();
-        final LevelIntroData data = LevelIntroRegistry.forLevelNumber(levelNumber);
-        final int[] step = {0};
-
-        PopupOverlay.Style style = new PopupOverlay.Style(
-            new Color(0, 0, 0, 178),
-            new Color(241, 242, 236),
-            new Color(217, 222, 214),
-            new Color(42, 50, 58),
-            new Color(42, 50, 58),
-            Color.WHITE,
-            new Color(42, 50, 58),
-            GameScreenLayout.scale(92),
-            GameScreenLayout.scale(46),
-            GameScreenLayout.scale(18),
-            GameScreenLayout.scale(28),
-            GameScreenLayout.scale(24),
-            GameScreenLayout.scale(7),
-            GameScreenLayout.scale(19),
-            GameScreenLayout.scale(18),
-            GameScreenLayout.scale(14),
-            GameScreenLayout.scale(18),
-            GameScreenLayout.scale(22));
-
-        List<PopupOverlay.Button> buttons = new ArrayList<>();
-        buttons.add(new PopupOverlay.Button(
-            INTRO_NEXT_X,
-            INTRO_BUTTON_Y,
-            INTRO_BUTTON_W,
-            INTRO_BUTTON_H,
-            overlay -> step[0] == INTRO_STEP_COUNT - 1 ? "START" : "NEXT",
-            overlay -> {
-                if (step[0] < INTRO_STEP_COUNT - 1) {
-                    step[0]++;
-                    overlay.refresh();
-                } else {
-                    overlay.close();
-                }
-            }));
-        buttons.add(new PopupOverlay.Button(
-            INTRO_BACK_X,
-            INTRO_BUTTON_Y,
-            INTRO_BUTTON_W,
-            INTRO_BUTTON_H,
-            overlay -> "BACK",
-            overlay -> {
-                if (step[0] > 0) {
-                    step[0]--;
-                    overlay.refresh();
-                }
-            },
-            overlay -> step[0] > 0));
-
-        addObject(
-            new PopupOverlay(
-                INTRO_CARD_W,
-                INTRO_CARD_H,
-                INTRO_CARD_X,
-                INTRO_CARD_Y,
-                style,
-                (overlay, image) -> {
-                    image.setColor(new Color(42, 50, 58));
-                    image.setFont(new Font("SansSerif", true, false, GameScreenLayout.scale(12)));
-                    image.drawString("PROJECT RIVETS // TRAINING SIMULATION", overlay.getCardLeft() + GameScreenLayout.scale(26), overlay.getCardTop() + GameScreenLayout.scale(30));
-
-                    image.setFont(new Font("SansSerif", true, false, GameScreenLayout.scale(22)));
-                    overlay.drawWrappedText(
-                        image,
-                        "Chamber " + levelNumber + " - " + data.chamberName,
-                        overlay.getCardLeft() + GameScreenLayout.scale(26),
-                        overlay.getCardTop() + GameScreenLayout.scale(62),
-                        overlay.getCardWidth() - GameScreenLayout.scale(88),
-                        GameScreenLayout.scale(24),
-                        1,
-                        new Color(42, 50, 58));
-
-                    image.setFont(new Font("SansSerif", true, false, GameScreenLayout.scale(18)));
-                    image.drawString(stepTitle(step[0]), overlay.getCardLeft() + GameScreenLayout.scale(26), overlay.getCardTop() + GameScreenLayout.scale(125));
-
-                    image.setFont(new Font("SansSerif", false, false, GameScreenLayout.scale(15)));
-                    drawStepBody(overlay, image, step[0], data);
-                    drawStepDots(overlay, image, step[0]);
-                },
-                buttons,
-                () -> introOverlayActive = false),
-            GameScreenLayout.WORLD_WIDTH / 2,
-            GameScreenLayout.WORLD_HEIGHT / 2);
-    }
-
-    private String stepTitle(int step) {
-        if (step == 0) return "Designation";
-        if (step == 1) return "Available Commands";
-        return "Mission Objective";
-    }
-
-    private void drawStepBody(PopupOverlay overlay, GreenfootImage image, int step, LevelIntroData data) {
-        int left = overlay.getCardLeft() + GameScreenLayout.scale(26);
-        int top = overlay.getCardTop() + GameScreenLayout.scale(158);
-        int width = overlay.getCardWidth() - GameScreenLayout.scale(52);
-
-        if (step == 0) {
-            overlay.drawWrappedText(image, data.narrative, left, top, width, GameScreenLayout.scale(23), 6, new Color(42, 50, 58));
-        } else if (step == 1) {
-            image.setFont(new Font("SansSerif", true, false, GameScreenLayout.scale(13)));
-            overlay.drawWrappedText(image, "AVAILABLE: " + data.commands, left, top, width, GameScreenLayout.scale(20), 2, new Color(42, 50, 58));
-            overlay.drawCodeBlock(image, data.example, left, top + GameScreenLayout.scale(58), width, GameScreenLayout.scale(148));
-        } else {
-            overlay.drawWrappedText(image, data.objective, left, top, width, GameScreenLayout.scale(24), 4, new Color(42, 50, 58));
-            image.setFont(new Font("SansSerif", false, false, GameScreenLayout.scale(14)));
-            overlay.drawWrappedText(
-                image,
-                "Optimal solutions are scored. Stars contribute to the final RIVETS classification after Chamber 15.",
-                left,
-                top + GameScreenLayout.scale(100),
-                width,
-                GameScreenLayout.scale(21),
-                3,
-                new Color(85, 91, 96));
-        }
-    }
-
-    private void drawStepDots(PopupOverlay overlay, GreenfootImage image, int step) {
-        int y = overlay.getCardTop() + overlay.getCardHeight() - GameScreenLayout.scale(28);
-        int startX = overlay.getCardLeft() + overlay.getCardWidth() / 2 - GameScreenLayout.scale(20);
-        for (int i = 0; i < INTRO_STEP_COUNT; i++) {
-            image.setColor(i == step ? new Color(42, 50, 58) : new Color(160, 166, 170));
-            image.fillOval(startX + i * GameScreenLayout.scale(20), y, GameScreenLayout.scale(8), GameScreenLayout.scale(8));
-        }
+    public void setIntroActive(boolean active) {
+        introOverlayActive = active;
     }
 
     // ── Terminal ──────────────────────────────────────────────────────────────
@@ -554,15 +464,62 @@ public class MyWorld extends World {
     private void redrawHUD() {
         GreenfootImage bg = getBackground();
 
-        bg.setColor(new Color(20, 20, 35));
+        // Prefer using an image asset for the HUD background when available.
+        // Falls back to the previous solid fill color if the image can't be loaded.
+        GreenfootImage hudImg = null;
+
+        hudImg = new GreenfootImage("ui/game-top-hud-bar.png");
+
+        // Scale the image to exactly fit the HUD strip and draw it.
+        hudImg.scale(GameScreenLayout.WORLD_WIDTH, GameScreenLayout.HUD_STRIP_H);
+            bg.drawImage(hudImg, 0, 0);
+
+        // Apply a subtle lightening tint so the HUD artwork reads brighter
+        // (use a low alpha white overlay). Adjust `tintAlpha` if needed.
+        int tintAlpha = 28; // 0-255; increase to make brighter
+        bg.setColor(new Color(255, 255, 255, tintAlpha));
         bg.fillRect(0, 0, GameScreenLayout.WORLD_WIDTH, GameScreenLayout.HUD_STRIP_H);
 
-        bg.setFont(new Font(GameScreenLayout.scale(12)));
-        bg.setColor(new Color(200, 200, 200));
-        bg.drawString(
-            "Level: " + LevelManager.getCurrentLevelNumber() + "   Attempts: " + attempts,
-            GameScreenLayout.scale(10),
-            GameScreenLayout.scale(14));
+        // Draw styled left-side labels (LEVEL / ATTEMPTS) using small text images so we can
+        // measure and place them precisely. Colors tuned to match the provided sample.
+        int yCenter = GameScreenLayout.HUD_STRIP_H / 2;
+
+        // Nudge labels slightly down from vertical center to match sample artwork
+        int verticalOffset = GameScreenLayout.scale(2);
+
+        int labelFont = GameScreenLayout.scale(12);
+        Color orange = new Color(255, 140, 30);
+        Color cyan = new Color(44, 220, 215);
+        Color offWhite = new Color(241, 242, 236);
+
+        String levelLabel = "LEVEL:";
+        String levelNum = String.valueOf(LevelManager.getCurrentLevelNumber());
+        String attemptsLabel = "ATTEMPTS:";
+        String attemptsNum = String.valueOf(attempts);
+
+        GreenfootImage lblLevelImg = new GreenfootImage(levelLabel, labelFont, orange, new Color(0,0,0,0));
+        GreenfootImage numLevelImg = new GreenfootImage(levelNum, labelFont, offWhite, new Color(0,0,0,0));
+        GreenfootImage lblAttemptsImg = new GreenfootImage(attemptsLabel, labelFont, cyan, new Color(0,0,0,0));
+        GreenfootImage numAttemptsImg = new GreenfootImage(attemptsNum, labelFont, offWhite, new Color(0,0,0,0));
+
+        // Move left-side HUD group further right to match requested spacing
+        int leftX = GameScreenLayout.scale(36);
+        int lvlY = yCenter - lblLevelImg.getHeight()/2 + verticalOffset;
+        bg.drawImage(lblLevelImg, leftX, lvlY);
+        bg.drawImage(numLevelImg, leftX + lblLevelImg.getWidth() + GameScreenLayout.scale(8), lvlY);
+
+        int attemptsX = leftX + lblLevelImg.getWidth() + numLevelImg.getWidth() + GameScreenLayout.scale(32);
+        bg.drawImage(lblAttemptsImg, attemptsX, lvlY);
+        bg.drawImage(numAttemptsImg, attemptsX + lblAttemptsImg.getWidth() + GameScreenLayout.scale(8), lvlY);
+
+        // Draw centered title (e.g. "TRAINING SIMULATION") in the middle of the HUD.
+        String title = "TRAINING SIMULATION";
+        int titleFont = GameScreenLayout.scale(14);
+        Color titleColor = new Color(150, 130, 230);
+        GreenfootImage titleImg = new GreenfootImage(title, titleFont, titleColor, new Color(0,0,0,0));
+        int tx = (GameScreenLayout.WORLD_WIDTH - titleImg.getWidth()) / 2;
+        int ty = yCenter - titleImg.getHeight()/2 + verticalOffset;
+        bg.drawImage(titleImg, tx, ty);
     }
 
     // ── Tiled game area (called from {@link Level} implementations) ─────────────

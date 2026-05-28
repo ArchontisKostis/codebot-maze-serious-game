@@ -29,7 +29,7 @@ public class IntroWorld extends World {
 
     // ── Typewriter ────────────────────────────────────────────────────────────
 
-    private static final int CHARS_PER_FRAME = 2;
+    private static final int CHARS_PER_FRAME = 1;
 
     // ── Phase state machine ───────────────────────────────────────────────────
 
@@ -62,9 +62,7 @@ public class IntroWorld extends World {
         slides = IntroSlideRegistry.load();
         images = new GreenfootImage[slides.size()];
         for (int i = 0; i < slides.size(); i++) {
-            GreenfootImage img = new GreenfootImage(slides.get(i).image);
-            img.scale(W, IMAGE_H);
-            images[i] = img;
+            images[i] = compositeSlideImage(slides.get(i).images);
         }
 
         // Build and shuffle the pixel-block grid
@@ -190,6 +188,32 @@ public class IntroWorld extends World {
     }
 
     // ── Slide rendering ───────────────────────────────────────────────────────
+
+    /**
+     * Composites one or more image paths into a single W×IMAGE_H frame.
+     * The first image is scaled to fill. Each additional image is scaled to
+     * fit (contain) and centred, so overlays with transparency sit naturally
+     * on top of the background.
+     */
+    private static GreenfootImage compositeSlideImage(String[] paths) {
+        GreenfootImage canvas = new GreenfootImage(W, IMAGE_H);
+        for (int j = 0; j < paths.length; j++) {
+            GreenfootImage layer = new GreenfootImage(paths[j]);
+            if (j == 0) {
+                layer.scale(W, IMAGE_H);
+                canvas.drawImage(layer, 0, 0);
+            } else {
+                double scaleX = (double) W      / layer.getWidth();
+                double scaleY = (double) IMAGE_H / layer.getHeight();
+                double scale  = Math.min(scaleX, scaleY);
+                int sw = (int)(layer.getWidth()  * scale);
+                int sh = (int)(layer.getHeight() * scale);
+                layer.scale(sw, sh);
+                canvas.drawImage(layer, (W - sw) / 2, (IMAGE_H - sh) / 2);
+            }
+        }
+        return canvas;
+    }
 
     /** Renders scene + panel + buttons — no narration text. Also updates hit-box fields. */
     private GreenfootImage renderSlideBase(int index) {
