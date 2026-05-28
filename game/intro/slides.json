@@ -1,0 +1,34 @@
+[
+  {
+    "image": "intro_slides/axiom_robotics.png",
+    "text": "Welcome to Axiom Robotics. You made it. I know the onboarding process is a lot — forms, clearances, the tour that takes twice as long as it should — but you're here now, and that's what matters."
+  },
+  {
+    "image": "intro_slides/lab_view.png",
+    "text": "My name is Helen. Senior researcher here at the Training Division. You're the new researcher assigned to our current project, and I'm glad you made it. I'll be the one walking you through what we actually do in this lab, and more importantly, what you'll be doing. There's a lot to cover, so let's not waste time."
+  },
+  {
+    "image": "intro_slides/lab_bg.png",
+    "text": "This is where we build the machines that will eventually work without us. The kind that can enter an unknown environment and figure it out. Getting there takes training. A lot of it."
+  },
+  {
+    "images": ["intro_slides/lab_bg.png", "robot/robot.png"],
+    "text": "And this is RIVETS. Our most advanced prototype. Six years of design, more iterations than I can count, and a set of capabilities that none of our previous units came close to."
+  },
+  {
+    "image": "intro_slides/lab_bg.png",
+    "text": "RIVETS runs on code. Your code. You'll write the programs that send it through each chamber — telling it where to move, what to collect, how to reach the goal. The logic you write isn't just instructions. It's the foundation of everything RIVETS learns from this point forward."
+  },
+  {
+    "image": "intro_slides/lab_view.png",
+    "text": "At the end of this training cycle, RIVETS gets classified. That classification is based entirely on how well it performed across all fifteen chambers — and performance is a direct reflection of the code it was given. Precise, efficient programs produce capable machines. Sloppy ones don't."
+  },
+  {
+    "image": "intro_slides/chamber_1.png",
+    "text": "Your assignment is straightforward: run RIVETS through all fifteen chambers. Write programs that get it where it needs to go, collect what it needs to collect, and do it cleanly. The chambers will challenge you. So will the code. That's the point."
+  },
+  {
+    "image": "intro_slides/lab_view.png",
+    "text": "Chamber One is prepped and waiting. RIVETS is ready when you are."
+  }
+]

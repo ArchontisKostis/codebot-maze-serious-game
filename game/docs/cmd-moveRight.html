@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>moveRight (Codebot API)</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Top nav -->
+<div class="topnav">
+  <ul>
+    <li><a href="index.html">Overview</a></li>
+    <li><span class="sep">|</span></li>
+    <li><a href="Robot.html">Package</a></li>
+    <li><span class="sep">|</span></li>
+    <li><a href="Robot.html">Class</a></li>
+    <li><span class="sep">|</span></li>
+    <li><strong>Command</strong></li>
+    <li><span class="sep">|</span></li>
+    <li><a href="#">Help</a></li>
+  </ul>
+</div>
+
+<div class="subnav">
+  <div class="subnav-left">
+    <a href="cmd-moveLeft.html">PREV COMMAND</a>
+    <span class="sep">|</span>
+    <a href="cmd-repeat.html">NEXT COMMAND</a>
+  </div>
+  <div class="subnav-right">
+    <strong>NO FRAMES</strong>
+    <span class="sep">|</span>
+    <a href="index.html">ALL COMMANDS</a>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="content">
+
+  <div class="breadcrumb">
+    <a href="Robot.html">Robot</a> &gt; moveRight
+  </div>
+
+  <div class="section-header-dark">Command Detail</div>
+
+  <div class="detail-block">
+    <div class="cmd-sig">
+      <span class="ret">void</span>moveRight()
+    </div>
+
+    <div class="detail-desc">
+      <p>
+        Moves the robot one cell to the <strong>right</strong> on the maze grid.
+        If there is a wall directly to the right of the robot, this command has no effect
+        and the robot stays in place.
+      </p>
+      <p>
+        Each <code>moveRight</code> costs exactly <strong>one game frame</strong>.
+      </p>
+    </div>
+
+    <dl class="params">
+      <dt>Since:</dt>
+      <dd>1.0</dd>
+    </dl>
+  </div>
+
+  <!-- Demo -->
+  <div class="demo-section">
+    <h3>Demo</h3>
+    <figure class="demo">
+      <div class="demo-media" data-label="Animation: robot moves one cell to the right">
+        <video autoplay loop muted playsinline>
+          <source src="../images/docs/moveRight.mp4" type="video/mp4" />
+          <img src="../images/docs/moveRight.gif" alt="moveRight animation" />
+        </video>
+      </div>
+      <figcaption>The robot advances one cell in the rightward direction.</figcaption>
+    </figure>
+  </div>
+
+  <!-- Examples -->
+  <div class="section-header">Examples</div>
+
+  <div class="detail-block">
+
+    <div class="examples-section">
+
+      <div class="example">
+        <div class="example-title">Move right once</div>
+        <p>Advance the robot one cell to the right.</p>
+        <pre class="code">moveRight</pre>
+      </div>
+
+      <div class="example">
+        <div class="example-title">Move right several columns</div>
+        <p>Chain multiple <code>moveRight</code> commands to travel further.</p>
+        <pre class="code">moveRight
+moveRight
+moveRight</pre>
+      </div>
+
+      <div class="example">
+        <div class="example-title">Navigate a corridor</div>
+        <p>Move right across a row, then turn and descend.</p>
+        <pre class="code">moveRight
+moveRight
+moveRight
+moveDown
+moveDown</pre>
+      </div>
+
+      <div class="example">
+        <div class="example-title">Use inside a repeat block</div>
+        <p>Use <a href="cmd-repeat.html"><code>repeat</code></a> to move right multiple columns concisely.</p>
+        <pre class="code">repeat(8)
+    moveRight
+end</pre>
+      </div>
+
+    </div>
+
+    <div class="see-also">
+      <strong>See Also:</strong>
+      <ul>
+        <li><a href="cmd-moveLeft.html"><code>moveLeft()</code></a></li>
+        <li><a href="cmd-moveUp.html"><code>moveUp()</code></a></li>
+        <li><a href="cmd-moveDown.html"><code>moveDown()</code></a></li>
+        <li><a href="cmd-repeat.html"><code>repeat(count) … end</code></a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <div class="subnav" style="border:none;background:none;padding:0;">
+      <div class="subnav-left">
+        <a href="cmd-moveLeft.html">PREV COMMAND</a>
+        <span class="sep">|</span>
+        <a href="cmd-repeat.html">NEXT COMMAND</a>
+      </div>
+      <div class="subnav-right">
+        <strong>NO FRAMES</strong>
+        <span class="sep">|</span>
+        <a href="index.html">ALL COMMANDS</a>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">Codebot API &nbsp;·&nbsp; codebot.robot &nbsp;·&nbsp; v1.0</div>
+
+</div>
+</body>
+</html>

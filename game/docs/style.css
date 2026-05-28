@@ -1,0 +1,421 @@
+/* ── Codebot API Docs — shared JavaDoc-style stylesheet ── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'DejaVu Sans', Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  background: #fff;
+  color: #000;
+}
+
+a { color: #4E6FAD; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ────────────────────────────────────────────────────────
+   Navigation bars
+──────────────────────────────────────────────────────── */
+
+.topnav {
+  background: #4D7A97;
+}
+.topnav ul {
+  list-style: none;
+  margin: 0;
+  padding: 4px 12px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.topnav ul li a {
+  color: #fff;
+  font-size: 13px;
+  padding: 4px 6px;
+  display: inline-block;
+}
+.topnav ul li.active a,
+.topnav ul li strong {
+  color: #fff;
+  font-weight: bold;
+  font-size: 13px;
+  padding: 4px 6px;
+  display: inline-block;
+}
+.topnav .sep { color: #aac8da; padding: 0 1px; font-size: 13px; }
+
+.subnav {
+  background: #dee3e9;
+  border-top: 1px solid #9eaebf;
+  border-bottom: 1px solid #9eaebf;
+  padding: 3px 12px;
+  font-size: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.subnav-left, .subnav-right {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.subnav a  { color: #4E6FAD; font-size: 12px; padding: 0 3px; }
+.subnav .dim { color: #999; font-size: 12px; padding: 0 3px; }
+.subnav strong { color: #000; font-size: 12px; padding: 0 3px; }
+.subnav .sep   { color: #999; padding: 0 2px; font-size: 12px; }
+
+.jumpbar {
+  background: #dee3e9;
+  border-bottom: 1px solid #9eaebf;
+  padding: 2px 12px;
+  font-size: 12px;
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.jumpbar .label { color: #555; }
+.jumpbar a { color: #4E6FAD; }
+.jumpbar .sep { color: #999; }
+
+/* ────────────────────────────────────────────────────────
+   Page content
+──────────────────────────────────────────────────────── */
+
+.content {
+  padding: 16px 20px 50px;
+}
+
+.pkg-path {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 4px;
+}
+
+h1.page-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin: 0 0 4px;
+  color: #000;
+}
+
+.breadcrumb {
+  font-size: 13px;
+  color: #555;
+  margin-bottom: 8px;
+}
+.breadcrumb a { color: #4E6FAD; }
+
+/* Hierarchy tree */
+.hierarchy {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  line-height: 1.9;
+  margin: 10px 0 14px;
+}
+.hierarchy .indent { padding-left: 20px; }
+
+.class-desc {
+  margin: 12px 0 16px;
+  line-height: 1.65;
+  font-size: 14px;
+}
+.class-desc p { margin-bottom: 8px; }
+
+dl.tag-block { font-size: 13px; margin: 6px 0; }
+dl.tag-block dt { font-weight: bold; display: inline; }
+dl.tag-block dd { display: inline; margin-left: 5px; }
+
+hr.sep { border: none; border-top: 1px solid #9eaebf; margin: 14px 0; }
+
+/* ────────────────────────────────────────────────────────
+   Section headers
+──────────────────────────────────────────────────────── */
+
+.section-header {
+  background: #dee3e9;
+  border: 1px solid #9eaebf;
+  padding: 5px 9px;
+  font-weight: bold;
+  font-size: 13px;
+  margin-top: 22px;
+  margin-bottom: 0;
+}
+
+.section-header-dark {
+  background: #9eaebf;
+  border: 1px solid #9eaebf;
+  padding: 5px 9px;
+  font-weight: bold;
+  font-size: 13px;
+  margin-bottom: 0;
+}
+
+/* ────────────────────────────────────────────────────────
+   Summary tables
+──────────────────────────────────────────────────────── */
+
+table.summary {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #9eaebf;
+  border-top: none;
+  font-size: 13px;
+}
+
+table.summary th {
+  background: #eee;
+  text-align: left;
+  padding: 5px 9px;
+  border-bottom: 1px solid #9eaebf;
+  font-size: 12px;
+  color: #444;
+  font-weight: bold;
+}
+
+table.summary td {
+  padding: 6px 9px;
+  vertical-align: top;
+  border-bottom: 1px solid #ddd;
+}
+
+table.summary tr:last-child td { border-bottom: none; }
+table.summary .even td { background: #EEEEFF; }
+table.summary .odd  td { background: #fff; }
+
+table.summary .col-type {
+  width: 90px;
+  font-family: 'Courier New', monospace;
+  color: #555;
+  white-space: nowrap;
+}
+
+table.summary .col-name {
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+}
+
+table.summary .col-name .brief {
+  display: block;
+  font-family: 'DejaVu Sans', Arial, sans-serif;
+  font-weight: normal;
+  color: #444;
+  margin-top: 3px;
+}
+
+/* ────────────────────────────────────────────────────────
+   Detail blocks (method / command)
+──────────────────────────────────────────────────────── */
+
+.detail-block {
+  border: 1px solid #9eaebf;
+  border-top: none;
+  padding: 14px 16px;
+  margin-bottom: 14px;
+}
+
+.cmd-sig {
+  font-family: 'Courier New', monospace;
+  font-size: 15px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+}
+.cmd-sig .ret { font-weight: normal; color: #555; margin-right: 4px; }
+
+.detail-desc {
+  font-size: 13px;
+  line-height: 1.65;
+  margin: 8px 0;
+}
+.detail-desc p { margin-bottom: 7px; }
+
+dl.params {
+  font-size: 13px;
+  margin: 10px 0;
+}
+dl.params dt { font-weight: bold; margin-top: 8px; color: #333; }
+dl.params dd { margin-left: 22px; margin-top: 2px; }
+
+.since-tag { font-size: 12px; color: #777; margin-top: 8px; }
+
+/* ────────────────────────────────────────────────────────
+   Code blocks
+──────────────────────────────────────────────────────── */
+
+code {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  padding: 1px 4px;
+}
+
+pre.code {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+  background: #f5f5f5;
+  border: 1px solid #9eaebf;
+  padding: 10px 13px;
+  line-height: 1.75;
+  margin: 8px 0 14px;
+  overflow-x: auto;
+  white-space: pre;
+}
+pre.code code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: inherit;
+}
+
+/* ────────────────────────────────────────────────────────
+   Demo media area
+──────────────────────────────────────────────────────── */
+
+.demo-section {
+  margin: 16px 0 20px;
+}
+
+.demo-section h3 {
+  font-size: 13px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 6px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 4px;
+}
+
+figure.demo {
+  margin: 0;
+}
+
+.demo-media {
+  display: block;
+  width: 100%;
+  max-width: 540px;
+  aspect-ratio: 4 / 3;
+  border: 1px solid #9eaebf;
+  background: #f0f2f8;
+  position: relative;
+  overflow: hidden;
+}
+
+.demo-media img,
+.demo-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* Shown when media file is missing */
+.demo-media::after {
+  content: attr(data-label);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: #888;
+  font-style: italic;
+  text-align: center;
+  padding: 12px;
+  pointer-events: none;
+}
+
+figure.demo figcaption {
+  font-size: 12px;
+  color: #555;
+  margin-top: 5px;
+  font-style: italic;
+}
+
+/* ────────────────────────────────────────────────────────
+   Example programs
+──────────────────────────────────────────────────────── */
+
+.examples-section {
+  margin: 18px 0;
+}
+
+.example {
+  margin-bottom: 18px;
+}
+
+.example-title {
+  font-weight: bold;
+  font-size: 13px;
+  color: #333;
+  margin-bottom: 4px;
+}
+
+.example p {
+  font-size: 13px;
+  color: #444;
+  margin: 0 0 5px;
+  line-height: 1.5;
+}
+
+/* ────────────────────────────────────────────────────────
+   See Also
+──────────────────────────────────────────────────────── */
+
+.see-also {
+  font-size: 13px;
+  margin-top: 12px;
+  border-top: 1px solid #eee;
+  padding-top: 8px;
+}
+.see-also strong { display: block; margin-bottom: 4px; }
+.see-also ul { margin: 0; padding-left: 20px; }
+.see-also ul li { margin-bottom: 3px; }
+
+/* ────────────────────────────────────────────────────────
+   Overview / package summary table
+──────────────────────────────────────────────────────── */
+
+table.pkg {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #9eaebf;
+  border-top: none;
+  font-size: 13px;
+}
+table.pkg th {
+  background: #eee;
+  text-align: left;
+  padding: 5px 9px;
+  border-bottom: 1px solid #9eaebf;
+  font-size: 12px;
+  color: #444;
+}
+table.pkg td {
+  padding: 6px 9px;
+  border-bottom: 1px solid #ddd;
+  vertical-align: top;
+}
+table.pkg tr:last-child td { border-bottom: none; }
+table.pkg td:first-child { width: 200px; white-space: nowrap; }
+table.pkg .even td { background: #EEEEFF; }
+
+/* ────────────────────────────────────────────────────────
+   Footer / bottom nav
+──────────────────────────────────────────────────────── */
+
+.bottom-nav {
+  border-top: 2px solid #4D7A97;
+  margin-top: 30px;
+  padding-top: 6px;
+}
+
+.page-footer {
+  text-align: center;
+  font-size: 11px;
+  color: #888;
+  margin-top: 10px;
+  padding-bottom: 20px;
+}

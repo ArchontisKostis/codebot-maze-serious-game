@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>repeat (Codebot API)</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Top nav -->
+<div class="topnav">
+  <ul>
+    <li><a href="index.html">Overview</a></li>
+    <li><span class="sep">|</span></li>
+    <li><a href="Robot.html">Package</a></li>
+    <li><span class="sep">|</span></li>
+    <li><a href="Robot.html">Class</a></li>
+    <li><span class="sep">|</span></li>
+    <li><strong>Command</strong></li>
+    <li><span class="sep">|</span></li>
+    <li><a href="#">Help</a></li>
+  </ul>
+</div>
+
+<div class="subnav">
+  <div class="subnav-left">
+    <a href="cmd-moveRight.html">PREV COMMAND</a>
+    <span class="sep">|</span>
+    <span class="dim">NEXT COMMAND</span>
+  </div>
+  <div class="subnav-right">
+    <strong>NO FRAMES</strong>
+    <span class="sep">|</span>
+    <a href="index.html">ALL COMMANDS</a>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="content">
+
+  <div class="breadcrumb">
+    <a href="Robot.html">Robot</a> &gt; repeat
+  </div>
+
+  <div class="section-header-dark">Control Structure Detail</div>
+
+  <div class="detail-block">
+    <div class="cmd-sig">
+      repeat(<em>count</em>) &hellip; end
+    </div>
+
+    <div class="detail-desc">
+      <p>
+        Repeats a block of commands exactly <code><em>count</em></code> times.
+        The block may contain any number of move commands and other
+        <code>repeat</code> blocks — nesting is fully supported.
+      </p>
+      <p>
+        Loop overhead costs <strong>no extra game frames</strong>.
+        Only the move commands inside the block count toward your frame total.
+      </p>
+      <p>
+        Every <code>repeat</code> must be closed with a matching <code>end</code>.
+        If the closing <code>end</code> is missing the program will not run and
+        an error is shown with the line number.
+      </p>
+    </div>
+
+    <dl class="params">
+      <dt>Parameters:</dt>
+      <dd>
+        <code>count</code> &mdash; integer between <strong>1</strong> and
+        <strong>100</strong> (inclusive). Values outside this range are errors.
+      </dd>
+
+      <dt>Throws:</dt>
+      <dd><code>ParseError</code> &mdash; if <code>count</code> is less than 1 or greater than 100.</dd>
+      <dd><code>ParseError</code> &mdash; if the closing <code>end</code> keyword is missing.</dd>
+      <dd><code>ParseError</code> &mdash; if an <code>end</code> appears without a matching <code>repeat</code>.</dd>
+
+      <dt>Since:</dt>
+      <dd>1.0</dd>
+    </dl>
+  </div>
+
+  <!-- Demo -->
+  <div class="demo-section">
+    <h3>Demo</h3>
+    <figure class="demo">
+      <div class="demo-media" data-label="Animation: repeat block executing three moveRight commands in a loop">
+        <video autoplay loop muted playsinline>
+          <source src="../images/docs/repeat.mp4" type="video/mp4" />
+          <img src="../images/docs/repeat.gif" alt="repeat animation" />
+        </video>
+      </div>
+      <figcaption>A <code>repeat(3)</code> block running <code>moveRight</code> three times.</figcaption>
+    </figure>
+  </div>
+
+  <!-- Examples -->
+  <div class="section-header">Examples</div>
+
+  <div class="detail-block">
+    <div class="examples-section">
+
+      <div class="example">
+        <div class="example-title">Repeat a single move</div>
+        <p>Move the robot right three times without writing <code>moveRight</code> three times.</p>
+        <pre class="code">repeat(3)
+    moveRight
+end</pre>
+      </div>
+
+      <div class="example">
+        <div class="example-title">Repeat multiple moves</div>
+        <p>
+          Every command inside the block is repeated. This moves the robot
+          right then down, four times over.
+        </p>
+        <pre class="code">repeat(4)
+    moveRight
+    moveDown
+end</pre>
+      </div>
+
+      <div class="example">
+        <div class="example-title">Commands before and after a repeat</div>
+        <p>Mix standalone moves with a loop freely.</p>
+        <pre class="code">moveUp
+repeat(3)
+    moveRight
+end
+moveDown</pre>
+      </div>
+
+      <div class="example">
+        <div class="example-title">Nested repeat blocks</div>
+        <p>
+          A <code>repeat</code> block can contain another <code>repeat</code> block.
+          Each <code>end</code> closes the innermost open <code>repeat</code>.
+          The example below moves up once, then sweeps left 4 cells,
+          and repeats that whole pattern twice.
+        </p>
+        <pre class="code">repeat(2)
+    moveUp
+    repeat(4)
+        moveLeft
+    end
+    moveDown
+end</pre>
+      </div>
+
+      <div class="example">
+        <div class="example-title">Maximum count</div>
+        <p>The highest allowed count is 100.</p>
+        <pre class="code">repeat(100)
+    moveRight
+end</pre>
+      </div>
+
+    </div>
+
+    <!-- Count reference table -->
+    <div class="section-header" style="margin-top:16px;">Valid Count Values</div>
+    <table class="summary" style="border-top:1px solid #9eaebf;">
+      <thead>
+        <tr>
+          <th>Value</th>
+          <th>Valid?</th>
+          <th>Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="odd">
+          <td><code>1</code></td>
+          <td>Yes</td>
+          <td>Minimum allowed value</td>
+        </tr>
+        <tr class="even">
+          <td><code>50</code></td>
+          <td>Yes</td>
+          <td>Within range</td>
+        </tr>
+        <tr class="odd">
+          <td><code>100</code></td>
+          <td>Yes</td>
+          <td>Maximum allowed value</td>
+        </tr>
+        <tr class="even">
+          <td><code>0</code></td>
+          <td>No</td>
+          <td>Must be at least 1</td>
+        </tr>
+        <tr class="odd">
+          <td><code>101</code></td>
+          <td>No</td>
+          <td>Exceeds maximum of 100</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="see-also" style="margin-top:16px;">
+      <strong>See Also:</strong>
+      <ul>
+        <li><a href="cmd-moveUp.html"><code>moveUp()</code></a></li>
+        <li><a href="cmd-moveDown.html"><code>moveDown()</code></a></li>
+        <li><a href="cmd-moveLeft.html"><code>moveLeft()</code></a></li>
+        <li><a href="cmd-moveRight.html"><code>moveRight()</code></a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <div class="subnav" style="border:none;background:none;padding:0;">
+      <div class="subnav-left">
+        <a href="cmd-moveRight.html">PREV COMMAND</a>
+        <span class="sep">|</span>
+        <span class="dim">NEXT COMMAND</span>
+      </div>
+      <div class="subnav-right">
+        <strong>NO FRAMES</strong>
+        <span class="sep">|</span>
+        <a href="index.html">ALL COMMANDS</a>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">Codebot API &nbsp;·&nbsp; codebot.robot &nbsp;·&nbsp; v1.0</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>moveDown (Codebot API)</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- Top nav -->
+<div class="topnav">
+  <ul>
+    <li><a href="index.html">Overview</a></li>
+    <li><span class="sep">|</span></li>
+    <li><a href="Robot.html">Package</a></li>
+    <li><span class="sep">|</span></li>
+    <li><a href="Robot.html">Class</a></li>
+    <li><span class="sep">|</span></li>
+    <li><strong>Command</strong></li>
+    <li><span class="sep">|</span></li>
+    <li><a href="#">Help</a></li>
+  </ul>
+</div>
+
+<div class="subnav">
+  <div class="subnav-left">
+    <a href="cmd-moveUp.html">PREV COMMAND</a>
+    <span class="sep">|</span>
+    <a href="cmd-moveLeft.html">NEXT COMMAND</a>
+  </div>
+  <div class="subnav-right">
+    <strong>NO FRAMES</strong>
+    <span class="sep">|</span>
+    <a href="index.html">ALL COMMANDS</a>
+  </div>
+</div>
+
+<!-- Content -->
+<div class="content">
+
+  <div class="breadcrumb">
+    <a href="Robot.html">Robot</a> &gt; moveDown
+  </div>
+
+  <div class="section-header-dark">Command Detail</div>
+
+  <div class="detail-block">
+    <div class="cmd-sig">
+      <span class="ret">void</span>moveDown()
+    </div>
+
+    <div class="detail-desc">
+      <p>
+        Moves the robot one cell <strong>downward</strong> on the maze grid.
+        If there is a wall directly below the robot, this command has no effect
+        and the robot stays in place.
+      </p>
+      <p>
+        Each <code>moveDown</code> costs exactly <strong>one game frame</strong>.
+      </p>
+    </div>
+
+    <dl class="params">
+      <dt>Since:</dt>
+      <dd>1.0</dd>
+    </dl>
+  </div>
+
+  <!-- Demo -->
+  <div class="demo-section">
+    <h3>Demo</h3>
+    <figure class="demo">
+      <div class="demo-media" data-label="Animation: robot moves one cell downward">
+        <video autoplay loop muted playsinline>
+          <source src="../images/docs/moveDown.mp4" type="video/mp4" />
+          <img src="../images/docs/moveDown.gif" alt="moveDown animation" />
+        </video>
+      </div>
+      <figcaption>The robot advances one cell in the downward direction.</figcaption>
+    </figure>
+  </div>
+
+  <!-- Examples -->
+  <div class="section-header">Examples</div>
+
+  <div class="detail-block">
+
+    <div class="examples-section">
+
+      <div class="example">
+        <div class="example-title">Move down once</div>
+        <p>Advance the robot one cell downward.</p>
+        <pre class="code">moveDown</pre>
+      </div>
+
+      <div class="example">
+        <div class="example-title">Descend multiple rows</div>
+        <p>Chain multiple <code>moveDown</code> commands to travel further.</p>
+        <pre class="code">moveDown
+moveDown
+moveDown</pre>
+      </div>
+
+      <div class="example">
+        <div class="example-title">Navigate around a wall below</div>
+        <p>If a wall blocks direct descent, go around it.</p>
+        <pre class="code">moveRight
+moveDown
+moveDown
+moveLeft</pre>
+      </div>
+
+      <div class="example">
+        <div class="example-title">Use inside a repeat block</div>
+        <p>Use <a href="cmd-repeat.html"><code>repeat</code></a> to descend multiple rows concisely.</p>
+        <pre class="code">repeat(5)
+    moveDown
+end</pre>
+      </div>
+
+    </div>
+
+    <div class="see-also">
+      <strong>See Also:</strong>
+      <ul>
+        <li><a href="cmd-moveUp.html"><code>moveUp()</code></a></li>
+        <li><a href="cmd-moveLeft.html"><code>moveLeft()</code></a></li>
+        <li><a href="cmd-moveRight.html"><code>moveRight()</code></a></li>
+        <li><a href="cmd-repeat.html"><code>repeat(count) … end</code></a></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Bottom nav -->
+  <div class="bottom-nav">
+    <div class="subnav" style="border:none;background:none;padding:0;">
+      <div class="subnav-left">
+        <a href="cmd-moveUp.html">PREV COMMAND</a>
+        <span class="sep">|</span>
+        <a href="cmd-moveLeft.html">NEXT COMMAND</a>
+      </div>
+      <div class="subnav-right">
+        <strong>NO FRAMES</strong>
+        <span class="sep">|</span>
+        <a href="index.html">ALL COMMANDS</a>
+      </div>
+    </div>
+  </div>
+  <div class="page-footer">Codebot API &nbsp;·&nbsp; codebot.robot &nbsp;·&nbsp; v1.0</div>
+
+</div>
+</body>
+</html>
