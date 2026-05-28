@@ -170,7 +170,7 @@ public class IntroWorld extends World {
     }
 
     private void startGame() {
-        Greenfoot.setWorld(new MyWorld(LevelManager.getCurrentLevel()));
+        Greenfoot.setWorld(new SimulationWorld(LevelManager.getCurrentLevel()));
     }
 
     // ── Pixel overlay ─────────────────────────────────────────────────────────

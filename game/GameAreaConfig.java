@@ -30,7 +30,7 @@ public final class GameAreaConfig {
 
     /**
      * Top-left pixel X of a tile column inside the game area (world coords).
-     * Matches {@link MyWorld#GAME_AREA_MIN_X} (0) for this layout.
+    * Matches {@link SimulationWorld#GAME_AREA_MIN_X} (0) for this layout.
      */
     public static int tileOriginX(int col) {
         return col * TILE_SIZE_PX;
@@ -38,7 +38,7 @@ public final class GameAreaConfig {
 
     /**
      * Top-left pixel Y of a tile row inside the game area (world coords).
-     * Matches {@link MyWorld#GAME_AREA_MIN_Y} (0) for this layout.
+    * Matches {@link SimulationWorld#GAME_AREA_MIN_Y} (0) for this layout.
      */
     public static int tileOriginY(int row) {
         return GameScreenLayout.HUD_STRIP_H + row * TILE_SIZE_PX;

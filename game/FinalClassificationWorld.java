@@ -7,7 +7,7 @@ public class FinalClassificationWorld extends World {
         drawUI();
         addObject(new MenuButton("RESTART", () -> {
             LevelManager.resetProgress();
-            Greenfoot.setWorld(new MyWorld(LevelManager.getCurrentLevel()));
+            Greenfoot.setWorld(new SimulationWorld(LevelManager.getCurrentLevel()));
         }), GameScreenLayout.WORLD_WIDTH / 2 - GameScreenLayout.scale(88), GameScreenLayout.scale(642));
         addObject(new MenuButton("HOME", () -> Greenfoot.setWorld(new HomeWorld())),
             GameScreenLayout.WORLD_WIDTH / 2 + GameScreenLayout.scale(92), GameScreenLayout.scale(642));

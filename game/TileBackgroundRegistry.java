@@ -1,7 +1,7 @@
 import greenfoot.GreenfootImage;
 
 /**
- * Maps {@link TileBackgroundId} to woodland tiles.
+ * Maps {@link TileBackgroundId} to tile artwork.
  * The source artwork is stored as pre-cropped PNGs in the images folder.
  */
 public final class TileBackgroundRegistry {
@@ -20,43 +20,11 @@ public final class TileBackgroundRegistry {
     private static GreenfootImage createImage(TileBackgroundId id) {
         switch (id) {
             case FLOOR:
-                return loadOrFallback("woodland_floor.png", TileBackgroundId.FLOOR);
+                return new GreenfootImage("game-grid-tiles/floor/floor_tile_generic.png");
             case WALL:
-                return loadOrFallback("woodland_wall.png", TileBackgroundId.WALL);
+                return new GreenfootImage("floor-tiles/obstacle_1.png");
             default:
-                return createFallbackImage(id);
+                throw new IllegalArgumentException("Unknown tile background: " + id);
         }
-    }
-
-    private static GreenfootImage loadOrFallback(String fileName, TileBackgroundId id) {
-        try {
-            return new GreenfootImage(fileName);
-        } catch (RuntimeException ex) {
-            return createFallbackImage(id);
-        }
-    }
-
-    private static GreenfootImage createFallbackImage(TileBackgroundId id) {
-        int s = GameAreaConfig.TILE_SIZE_PX;
-        GreenfootImage img = new GreenfootImage(s, s);
-        switch (id) {
-            case FLOOR:
-                img.setColor(new greenfoot.Color(210, 210, 215));
-                img.fill();
-                img.setColor(new greenfoot.Color(185, 188, 198));
-                img.drawRect(0, 0, s - 1, s - 1);
-                break;
-            case WALL:
-                img.setColor(new greenfoot.Color(75, 75, 88));
-                img.fill();
-                img.setColor(new greenfoot.Color(45, 45, 55));
-                img.drawRect(0, 0, s - 1, s - 1);
-                break;
-            default:
-                img.setColor(greenfoot.Color.LIGHT_GRAY);
-                img.fill();
-                break;
-        }
-        return img;
     }
 }

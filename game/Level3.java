@@ -41,7 +41,7 @@ public class Level3 implements Level {
     }
 
     @Override
-    public void setup(MyWorld world) {
+    public void setup(SimulationWorld world) {
         ParsedTileLevel parsed = AsciiTileMapParser.parse(LEVEL_LINES);
         world.installTileLevel(parsed);
     }

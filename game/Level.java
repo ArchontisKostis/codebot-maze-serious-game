@@ -6,5 +6,5 @@
  */
 public interface Level  
 {
-    void setup(MyWorld world);
+    void setup(SimulationWorld world);
 }

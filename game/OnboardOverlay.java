@@ -28,7 +28,7 @@ public class OnboardOverlay extends Actor {
     // ── State ────────────────────────────────────────────────────────────────
 
     private final OnboardFlow flow;
-    private final MyWorld     world;
+    private final SimulationWorld world;
     private int stepIndex = 0;
 
     // Button hit-boxes in world coordinates (set each redraw)
@@ -37,7 +37,7 @@ public class OnboardOverlay extends Actor {
 
     // ── Construction ─────────────────────────────────────────────────────────
 
-    public OnboardOverlay(OnboardFlow flow, MyWorld world) {
+    public OnboardOverlay(OnboardFlow flow, SimulationWorld world) {
         this.flow  = flow;
         this.world = world;
         world.setIntroActive(true);

@@ -3,7 +3,7 @@ import greenfoot.Color;
 import greenfoot.GreenfootImage;
 
 /**
- * Collectible placed on a tile; removed when the robot steps on it (see {@link MyWorld}).
+ * Collectible placed on a tile; removed when the robot steps on it (see {@link SimulationWorld}).
  */
 public class Coin extends Actor {
 

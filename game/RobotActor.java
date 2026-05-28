@@ -93,7 +93,7 @@ public class RobotActor extends Actor {
 
     /**
      * Places the robot on a tile and records that tile as home for RUN / RESET.
-     * Called from {@link MyWorld#installTileLevel}.
+    * Called from {@link SimulationWorld#installTileLevel}.
      */
     public void placeOnTile(int col, int row) {
         tileCol = col;
@@ -190,7 +190,7 @@ public class RobotActor extends Actor {
         setLocation(GameAreaConfig.tileCentreX(tileCol), GameAreaConfig.tileCentreY(tileRow));
     }
 
-    private MyWorld world() {
-        return (MyWorld) getWorld();
+    private SimulationWorld world() {
+        return (SimulationWorld) getWorld();
     }
 }
