@@ -74,6 +74,10 @@ public class LevelManager {
 
     public static int getCurrentLevelIndex() { return currentLevel; }
 
+    public static void setCurrentLevel(int index) {
+        currentLevel = Math.max(0, Math.min(index, levelsList.size() - 1));
+    }
+
     public static int getCurrentLevelNumber() {
         return currentLevel + 1;
     }

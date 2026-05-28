@@ -78,12 +78,19 @@ public class SimulationWorld extends World {
 
         drawStaticUI();
         createActors();
+        CheatEngine cheatEngine = new CheatEngine(terminalManager);
+        cheatEngine.register("skipLvl",  args -> onGoalReached());
+        cheatEngine.register("goto",     args -> goToLevel(Integer.parseInt(args[0])));
+        cheatEngine.register("coins",    args -> collectAllCoins());
+        cheatEngine.register("stars",    args -> LevelManager.recordCurrentLevelStars(3));
+        cheatEngine.register("resetAll", args -> { LevelManager.resetProgress(); goToLevel(1); });
         this.executionService = new ProgramExecutionService(
             robot,
             editor,
             terminalManager,
             compilationPipeline,
             sessionState,
+            cheatEngine,
             this::redrawHUD,
             this::onGoalReached);
         this.progressionController = new LevelProgressionController(sessionState, terminalManager);
@@ -368,5 +375,20 @@ public class SimulationWorld extends World {
     /** Clears a collected coin from the map and removes its actors. */
     public void collectCoinAt(int col, int row) {
         coinTracker.collectCoinAt(this, tileMap, col, row);
+    }
+
+    private void collectAllCoins() {
+        for (int r = 0; r < tileMap.getRows(); r++) {
+            for (int c = 0; c < tileMap.getCols(); c++) {
+                if (tileMap.isCoinAt(c, r)) {
+                    collectCoinAt(c, r);
+                }
+            }
+        }
+    }
+
+    private void goToLevel(int n) {
+        LevelManager.setCurrentLevel(n - 1);
+        Greenfoot.setWorld(new LoadingWorld(() -> new SimulationWorld(LevelManager.getCurrentLevel())));
     }
 }

@@ -5,6 +5,7 @@ public final class ProgramExecutionService {
     private final TerminalManager terminalManager;
     private final ProgramCompilationPipeline compilationPipeline;
     private final MyWorldSessionState sessionState;
+    private final CheatEngine cheatEngine;
     private final Runnable redrawHudAction;
     private final Runnable onGoalReachedAction;
 
@@ -14,6 +15,7 @@ public final class ProgramExecutionService {
         TerminalManager terminalManager,
         ProgramCompilationPipeline compilationPipeline,
         MyWorldSessionState sessionState,
+        CheatEngine cheatEngine,
         Runnable redrawHudAction,
         Runnable onGoalReachedAction) {
         this.robot = robot;
@@ -21,6 +23,7 @@ public final class ProgramExecutionService {
         this.terminalManager = terminalManager;
         this.compilationPipeline = compilationPipeline;
         this.sessionState = sessionState;
+        this.cheatEngine = cheatEngine;
         this.redrawHudAction = redrawHudAction;
         this.onGoalReachedAction = onGoalReachedAction;
     }
@@ -33,10 +36,7 @@ public final class ProgramExecutionService {
         terminalManager.clear();
         editor.clearExecutingLine();
 
-        if (source.trim().equals("skipLvl")) {
-            onGoalReachedAction.run();
-            return;
-        }
+        if (cheatEngine.tryDispatch(source)) return;
 
         Program program = compileProgram(source, "~ # [!] Nothing to run");
         if (program == null) {
