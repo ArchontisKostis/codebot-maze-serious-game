@@ -60,6 +60,7 @@ public class SimulationWorld extends World {
 
     private final TerminalManager terminalManager;
     private final ProgramCompilationPipeline compilationPipeline;
+    private CheatEngine cheatEngine;
     private ProgramExecutionService executionService;
     private LevelProgressionController progressionController;
     private ProgramStopOverlayController overlayController;
@@ -76,14 +77,14 @@ public class SimulationWorld extends World {
         this.terminalManager = new TerminalManager(this);
         this.compilationPipeline = new ProgramCompilationPipeline();
 
+        this.cheatEngine = new CheatEngine(terminalManager);
+        this.cheatEngine.register("skip",  args -> onGoalReached());
+        this.cheatEngine.register("goto",     args -> goToLevel(Integer.parseInt(args[0])));
+        this.cheatEngine.register("coins",    args -> collectAllCoins());
+        this.cheatEngine.register("stars",    args -> LevelManager.recordCurrentLevelStars(3));
+        this.cheatEngine.register("resetAll", args -> { LevelManager.resetProgress(); goToLevel(1); });
         drawStaticUI();
         createActors();
-        CheatEngine cheatEngine = new CheatEngine(terminalManager);
-        cheatEngine.register("skipLvl",  args -> onGoalReached());
-        cheatEngine.register("goto",     args -> goToLevel(Integer.parseInt(args[0])));
-        cheatEngine.register("coins",    args -> collectAllCoins());
-        cheatEngine.register("stars",    args -> LevelManager.recordCurrentLevelStars(3));
-        cheatEngine.register("resetAll", args -> { LevelManager.resetProgress(); goToLevel(1); });
         this.executionService = new ProgramExecutionService(
             robot,
             editor,
@@ -157,7 +158,7 @@ public class SimulationWorld extends World {
             GameAreaConfig.tileCentreY(0));
 
         // Code editor — centred in the script area
-        editor = new CodeEditor(() -> stepScript());
+        editor = new CodeEditor(() -> stepScript(), cheatEngine::tryDispatch);
         addObject(editor,
             SCRIPT_AREA_X + SCRIPT_AREA_W / 2,
             SCRIPT_AREA_Y + SCRIPT_AREA_H / 2);

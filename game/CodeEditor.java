@@ -1,5 +1,6 @@
 import greenfoot.*;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * CodeEditor
@@ -73,15 +74,21 @@ public class CodeEditor extends Actor {
     private boolean scrollbarDragging = false;
     private int scrollbarDragOffsetY = 0;
     private final Runnable stepAction;
+    private final Predicate<String> enterInterceptor;
 
     // ── Constructor ───────────────────────────────────────────────────────────
 
     public CodeEditor() {
-        this(null);
+        this(null, null);
     }
 
     public CodeEditor(Runnable stepAction) {
+        this(stepAction, null);
+    }
+
+    public CodeEditor(Runnable stepAction, Predicate<String> enterInterceptor) {
         this.stepAction = stepAction;
+        this.enterInterceptor = enterInterceptor;
         redraw();
     }
 
@@ -246,6 +253,9 @@ public class CodeEditor extends Actor {
                 return false;
 
             case "enter":
+                if (enterInterceptor != null && enterInterceptor.test(text.toString())) {
+                    return true;
+                }
                 text.insert(cursorPos, '\n');
                 cursorPos++;
                 syncGoalColumnFromCursor();
