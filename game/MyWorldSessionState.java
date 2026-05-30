@@ -7,6 +7,7 @@ public final class MyWorldSessionState {
     private Program lastProgram;
     private boolean introOverlayActive;
     private boolean programEndOverlayActive;
+    private boolean levelCompleteActive;
 
     public MyWorldSessionState() {
         this.goalAdvanceCountdown = -1;
@@ -78,5 +79,13 @@ public final class MyWorldSessionState {
 
     public void setProgramEndOverlayActive(boolean programEndOverlayActive) {
         this.programEndOverlayActive = programEndOverlayActive;
+    }
+
+    public boolean isLevelCompleteActive() {
+        return levelCompleteActive;
+    }
+
+    public void setLevelCompleteActive(boolean levelCompleteActive) {
+        this.levelCompleteActive = levelCompleteActive;
     }
 }

@@ -215,8 +215,10 @@ public class SimulationWorld extends World {
     @Override
     public void act() {
         if (progressionController.tickAdvanceCountdown(
-            sessionState.isIntroOverlayActive() || sessionState.isProgramEndOverlayActive())) {
-            advanceToNextLevel();
+            sessionState.isIntroOverlayActive()
+                || sessionState.isProgramEndOverlayActive()
+                || sessionState.isLevelCompleteActive())) {
+            showLevelCompleteOverlay();
         }
     }
 
@@ -226,7 +228,30 @@ public class SimulationWorld extends World {
         progressionController.onGoalReached();
     }
 
-    private void advanceToNextLevel() {
+    /**
+     * Shown when the win-pause countdown fires. Presents the interactive
+     * Level Complete panel; navigation is driven by the panel's buttons.
+     */
+    private void showLevelCompleteOverlay() {
+        addObject(
+            new LevelCompleteOverlay(
+                this,
+                LevelManager.getCurrentLevelStars(),
+                LevelManager.getCurrentLevelNumber(),
+                sessionState.getAttempts()),
+            GameScreenLayout.WORLD_WIDTH / 2,
+            GameScreenLayout.WORLD_HEIGHT / 2);
+    }
+
+    public void goHome() {
+        Greenfoot.setWorld(new HomeWorld());
+    }
+
+    public void replayLevel() {
+        Greenfoot.setWorld(new LoadingWorld(() -> new SimulationWorld(LevelManager.getCurrentLevel())));
+    }
+
+    public void advanceToNextLevel() {
         if (LevelManager.hasNextLevel()) {
             LevelManager.advanceLevel();
             Greenfoot.setWorld(new LoadingWorld(() -> new SimulationWorld(LevelManager.getCurrentLevel())));
@@ -267,6 +292,10 @@ public class SimulationWorld extends World {
 
     public void setIntroActive(boolean active) {
         sessionState.setIntroOverlayActive(active);
+    }
+
+    public void setLevelCompleteActive(boolean active) {
+        sessionState.setLevelCompleteActive(active);
     }
 
     // Terminal rendering is handled by TerminalManager.
