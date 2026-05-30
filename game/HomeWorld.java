@@ -27,17 +27,44 @@ public class HomeWorld extends World {
 
     private void createMenu() {
         int cx = GameScreenLayout.WORLD_WIDTH / 2;
-        addObject(new MenuButton("START", () -> {
+        int firstY = GameScreenLayout.scale(378);
+        int pitch = GameScreenLayout.scale(63);
+
+        addMenuButton("ui/start-btn.png", "START", () -> {
                 LevelManager.resetProgress();
                 Greenfoot.setWorld(new LoadingWorld(() -> new IntroWorld()));
-            }),
-            cx, GameScreenLayout.scale(376));
-        addObject(new MenuButton("SETTINGS", this::showSettingsPopup),
-            cx, GameScreenLayout.scale(430));
-        addObject(new MenuButton("INSTRUCTIONS", this::showInstructionsPopup),
-            cx, GameScreenLayout.scale(484));
-        addObject(new MenuButton("CREDITS", this::showCreditsPopup),
-            cx, GameScreenLayout.scale(538));
+            },
+            cx, firstY);
+        addMenuButton("ui/settings-btn.png", "SETTINGS", this::showSettingsPopup,
+            cx, firstY + pitch);
+        addMenuButton("ui/instructions-btn.png", "INSTRUCTIONS", this::showInstructionsPopup,
+            cx, firstY + pitch * 2);
+        addMenuButton("ui/credits-btn.png", "CREDITS", this::showCreditsPopup,
+            cx, firstY + pitch * 3);
+    }
+
+    /**
+     * Add a menu button that uses the supplied artwork, scaled to a consistent
+     * size that preserves the artwork's aspect ratio. Falls back to a drawn text
+     * button if the image is missing, mirroring how the in-game controls behave.
+     */
+    private void addMenuButton(String imagePath, String label, Runnable action, int x, int y) {
+        // Baseline button footprint (the artwork is 408×137 ≈ 2.98:1).
+        int width = GameScreenLayout.scale(176);
+        int height = GameScreenLayout.scale(59);
+
+        GreenfootImage art = null;
+        try {
+            art = new GreenfootImage(imagePath);
+        } catch (IllegalArgumentException e) {
+            art = null;
+        }
+
+        if (art != null) {
+            addObject(new MenuButton(art, action, width, height), x, y);
+        } else {
+            addObject(new MenuButton(label, action, width), x, y);
+        }
     }
 
     private void showSettingsPopup() {
