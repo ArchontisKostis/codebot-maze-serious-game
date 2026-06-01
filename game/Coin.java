@@ -1,5 +1,4 @@
 import greenfoot.Actor;
-import greenfoot.Color;
 import greenfoot.GreenfootImage;
 
 /**
@@ -8,12 +7,9 @@ import greenfoot.GreenfootImage;
 public class Coin extends Actor {
 
     public Coin() {
-        int s = GameAreaConfig.TILE_SIZE_PX;
-        GreenfootImage img = new GreenfootImage(s, s);
-        img.setColor(new Color(255, 220, 60));
-        img.fillOval(0, 0, s - 1, s - 1);
-        img.setColor(new Color(200, 160, 20));
-        img.drawOval(0, 0, s - 1, s - 1);
+        GreenfootImage img = new GreenfootImage("game-grid-tiles/general/coin.png");
+        int size = GameAreaConfig.TILE_SIZE_PX;
+        img.scale(size, size);
         setImage(img);
     }
 }
