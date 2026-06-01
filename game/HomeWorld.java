@@ -3,6 +3,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HomeWorld extends World {
+    /** Logo placement over the generic background (the logo is a standalone asset, not baked in). */
+    private static final int LOGO_TOP = GameScreenLayout.scale(28);
+    private static final int LOGO_WIDTH = GameScreenLayout.scale(440);
+
     private PopupOverlay activePopup;
 
     public HomeWorld() {
@@ -13,34 +17,42 @@ public class HomeWorld extends World {
     }
 
     private GreenfootImage loadBackground() {
-        GreenfootImage image = new GreenfootImage("home_bg.png");
-        
-        boolean imageWidthMatchesWorldWidth = image.getWidth() == GameScreenLayout.WORLD_WIDTH;
-        boolean imageHeightMatchesWorldHeight = image.getHeight() == GameScreenLayout.WORLD_HEIGHT;
-        boolean imageSizeMatchesWorldSize = imageWidthMatchesWorldWidth && imageHeightMatchesWorldHeight;
+        int w = GameScreenLayout.WORLD_WIDTH;
+        int h = GameScreenLayout.WORLD_HEIGHT;
 
-        if (!imageSizeMatchesWorldSize) 
-            image.scale(GameScreenLayout.WORLD_WIDTH, GameScreenLayout.WORLD_HEIGHT);
-        
-        return image;
+        GreenfootImage bg = new GreenfootImage("ui/generic-bg.png");
+        bg.scale(w, h);
+
+        // Draw the standalone logo on top, scaled to LOGO_WIDTH (aspect preserved) and
+        // centered horizontally — positioned freely, no bake-in tricks needed.
+        GreenfootImage logo = new GreenfootImage("logo/logo_white_outline.png");
+        int logoW = LOGO_WIDTH;
+        int logoH = logoW * logo.getHeight() / logo.getWidth();
+        logo.scale(logoW, logoH);
+        bg.drawImage(logo, (w - logoW) / 2, LOGO_TOP);
+
+        return bg;
     }
 
     private void createMenu() {
         int cx = GameScreenLayout.WORLD_WIDTH / 2;
-        int firstY = GameScreenLayout.scale(378);
-        int pitch = GameScreenLayout.scale(63);
+        int firstY = GameScreenLayout.scale(309);
+        int pitch = GameScreenLayout.scale(67);
 
         addMenuButton("ui/start-btn.png", "START", () -> {
                 LevelManager.resetProgress();
                 Greenfoot.setWorld(new LoadingWorld(() -> new IntroWorld()));
             },
             cx, firstY);
-        addMenuButton("ui/settings-btn.png", "SETTINGS", this::showSettingsPopup,
+        // FREE PLAY does not reset or advance campaign progress.
+        addMenuButton("ui/free-play-btn.png", "FREE PLAY", () -> Greenfoot.setWorld(new FreePlayWorld()),
             cx, firstY + pitch);
-        addMenuButton("ui/instructions-btn.png", "INSTRUCTIONS", this::showInstructionsPopup,
+        addMenuButton("ui/settings-btn.png", "SETTINGS", this::showSettingsPopup,
             cx, firstY + pitch * 2);
-        addMenuButton("ui/credits-btn.png", "CREDITS", this::showCreditsPopup,
+        addMenuButton("ui/instructions-btn.png", "INSTRUCTIONS", this::showInstructionsPopup,
             cx, firstY + pitch * 3);
+        addMenuButton("ui/credits-btn.png", "CREDITS", this::showCreditsPopup,
+            cx, firstY + pitch * 4);
     }
 
     /**
