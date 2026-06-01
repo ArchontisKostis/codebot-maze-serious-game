@@ -54,17 +54,17 @@ public class MenuButton extends Actor {
         int height = GameScreenLayout.scale(36);
         GreenfootImage image = new GreenfootImage(width, height);
 
-        image.setColor(new Color(238, 239, 232));
+        image.setColor(UiTheme.BTN_PRIMARY);
         image.fillRect(0, 0, width, height);
-        image.setColor(new Color(42, 50, 58));
+        image.setColor(UiTheme.BTN_PRIMARY_BORDER);
         image.drawRect(0, 0, width - 1, height - 1);
         image.drawRect(1, 1, width - 3, height - 3);
 
-        image.setColor(new Color(42, 50, 58));
+        image.setColor(UiTheme.BTN_TEXT);
         image.setFont(new Font("SansSerif", true, false, fontSize));
         // Render the text to a temporary image so we can measure it exactly,
         // then draw that image centered in the button.
-        GreenfootImage textImg = new GreenfootImage(text, fontSize, new Color(42, 50, 58), new Color(0,0,0,0));
+        GreenfootImage textImg = new GreenfootImage(text, fontSize, UiTheme.BTN_TEXT, new Color(0,0,0,0));
         int textDrawX = (width - textImg.getWidth()) / 2;
         int textDrawY = (height - textImg.getHeight()) / 2;
 

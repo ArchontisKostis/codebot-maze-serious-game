@@ -81,7 +81,7 @@ public class HomeWorld extends World {
         int totalW = buttonW * 3 + gap * 2;
         int startX = cardX + (cardW - totalW) / 2;
 
-        PopupOverlay.Style style = popupStyle(GameScreenLayout.scale(58), new Color(0, 0, 0, 168));
+        PopupOverlay.Style style = popupStyle(GameScreenLayout.scale(58), UiTheme.BACKDROP);
 
         List<PopupOverlay.Button> buttons = new ArrayList<>();
         buttons.add(new PopupOverlay.Button(
@@ -90,8 +90,8 @@ public class HomeWorld extends World {
             buttonW,
             buttonH,
             overlay -> "SLOW",
-            overlay -> Settings.getAnimationSpeed() == Settings.AnimationSpeed.SLOW ? Color.BLACK : Color.WHITE,
-            overlay -> Settings.getAnimationSpeed() == Settings.AnimationSpeed.SLOW ? Color.WHITE : new Color(38, 46, 54),
+            overlay -> Settings.getAnimationSpeed() == Settings.AnimationSpeed.SLOW ? UiTheme.BTN_PRIMARY : UiTheme.BTN_GHOST,
+            overlay -> Settings.getAnimationSpeed() == Settings.AnimationSpeed.SLOW ? UiTheme.BTN_TEXT : UiTheme.BODY,
             overlay -> {
                 Settings.setAnimationSpeed(Settings.AnimationSpeed.SLOW);
                 overlay.refresh();
@@ -102,8 +102,8 @@ public class HomeWorld extends World {
             buttonW,
             buttonH,
             overlay -> "NORMAL",
-            overlay -> Settings.getAnimationSpeed() == Settings.AnimationSpeed.NORMAL ? Color.BLACK : Color.WHITE,
-            overlay -> Settings.getAnimationSpeed() == Settings.AnimationSpeed.NORMAL ? Color.WHITE : new Color(38, 46, 54),
+            overlay -> Settings.getAnimationSpeed() == Settings.AnimationSpeed.NORMAL ? UiTheme.BTN_PRIMARY : UiTheme.BTN_GHOST,
+            overlay -> Settings.getAnimationSpeed() == Settings.AnimationSpeed.NORMAL ? UiTheme.BTN_TEXT : UiTheme.BODY,
             overlay -> {
                 Settings.setAnimationSpeed(Settings.AnimationSpeed.NORMAL);
                 overlay.refresh();
@@ -114,8 +114,8 @@ public class HomeWorld extends World {
             buttonW,
             buttonH,
             overlay -> "FAST",
-            overlay -> Settings.getAnimationSpeed() == Settings.AnimationSpeed.FAST ? Color.BLACK : Color.WHITE,
-            overlay -> Settings.getAnimationSpeed() == Settings.AnimationSpeed.FAST ? Color.WHITE : new Color(38, 46, 54),
+            overlay -> Settings.getAnimationSpeed() == Settings.AnimationSpeed.FAST ? UiTheme.BTN_PRIMARY : UiTheme.BTN_GHOST,
+            overlay -> Settings.getAnimationSpeed() == Settings.AnimationSpeed.FAST ? UiTheme.BTN_TEXT : UiTheme.BODY,
             overlay -> {
                 Settings.setAnimationSpeed(Settings.AnimationSpeed.FAST);
                 overlay.refresh();
@@ -137,7 +137,7 @@ public class HomeWorld extends World {
             (overlay, image) -> {
                 drawPopupTitle(image, overlay, "SETTINGS", GameScreenLayout.scale(28));
                 image.setFont(new Font("SansSerif", false, false, GameScreenLayout.scale(18)));
-                image.setColor(Color.BLACK);
+                image.setColor(UiTheme.TITLE);
                 image.drawString("Animation Speed", overlay.getCardLeft() + GameScreenLayout.scale(32), overlay.getCardTop() + GameScreenLayout.scale(116));
             },
             buttons,
@@ -150,19 +150,14 @@ public class HomeWorld extends World {
         if (activePopup != null) return;
 
         int cardW = GameScreenLayout.scale(680);
-        int cardH = GameScreenLayout.scale(500);
+        // Height tuned to sit just below the MISSION block. This popup has no bottom
+        // button — it is dismissed via the top-right close (X).
+        int cardH = GameScreenLayout.scale(380);
         int cardX = (GameScreenLayout.WORLD_WIDTH - cardW) / 2;
-        int cardY = GameScreenLayout.scale(70);
-        PopupOverlay.Style style = popupStyle(GameScreenLayout.scale(62), new Color(0, 0, 0, 176));
+        int cardY = GameScreenLayout.scale(120);
+        PopupOverlay.Style style = popupStyle(GameScreenLayout.scale(62), UiTheme.BACKDROP);
 
         List<PopupOverlay.Button> buttons = new ArrayList<>();
-        buttons.add(new PopupOverlay.Button(
-            cardX + (cardW - GameScreenLayout.scale(120)) / 2,
-            cardY + cardH - GameScreenLayout.scale(60),
-            GameScreenLayout.scale(120),
-            GameScreenLayout.scale(34),
-            overlay -> "CLOSE",
-            PopupOverlay::close));
 
         activePopup = new PopupOverlay(
             cardW,
@@ -204,12 +199,12 @@ public class HomeWorld extends World {
                 drawSection(image, "MISSION", rightX, rightY);
                 rightY += lineH;
                 image.setFont(new Font("SansSerif", false, false, GameScreenLayout.scale(15)));
-                image.setColor(new Color(42, 50, 58));
+                image.setColor(UiTheme.BODY);
                 image.drawString("Write code that guides RIVETS to the goal.", rightX, rightY); rightY += lineH;
                 image.drawString("From Chamber 8 onward, loops improve", rightX, rightY); rightY += lineH;
                 image.drawString("your score and final classification.", rightX, rightY);
 
-                image.setColor(new Color(82, 92, 98));
+                image.setColor(UiTheme.BODY_MUTED);
                 image.setFont(new Font("SansSerif", false, false, GameScreenLayout.scale(13)));
                 image.drawString("Keywords are not case-sensitive: moveUp, MOVEUP, and moveup all work.", x, overlay.getCardTop() + overlay.getCardHeight() - GameScreenLayout.scale(20));
             },
@@ -226,7 +221,7 @@ public class HomeWorld extends World {
         int cardH = GameScreenLayout.scale(320);
         int cardX = (GameScreenLayout.WORLD_WIDTH - cardW) / 2;
         int cardY = GameScreenLayout.scale(135);
-        PopupOverlay.Style style = popupStyle(GameScreenLayout.scale(62), new Color(0, 0, 0, 168));
+        PopupOverlay.Style style = popupStyle(GameScreenLayout.scale(62), UiTheme.BACKDROP);
 
         List<PopupOverlay.Button> buttons = new ArrayList<>();
         buttons.add(new PopupOverlay.Button(
@@ -248,11 +243,13 @@ public class HomeWorld extends World {
                 int left = overlay.getCardLeft() + GameScreenLayout.scale(32);
                 int top = overlay.getCardTop() + GameScreenLayout.scale(128);
 
-                image.setColor(new Color(42, 50, 58));
+                image.setColor(UiTheme.BODY_MUTED);
                 image.setFont(new Font("SansSerif", false, false, GameScreenLayout.scale(18)));
                 image.drawString("Created by", left + GameScreenLayout.scale(4), top - GameScreenLayout.scale(22));
+                image.setColor(UiTheme.TITLE);
                 image.setFont(new Font("SansSerif", true, false, GameScreenLayout.scale(22)));
                 image.drawString("Archontis E. Kostis", left - GameScreenLayout.scale(4), top + GameScreenLayout.scale(16));
+                image.setColor(UiTheme.BODY);
                 image.setFont(new Font("SansSerif", false, false, GameScreenLayout.scale(14)));
                 image.drawString("Project RIVETS: CodeBot Maze", left, top + GameScreenLayout.scale(66));
             },
@@ -265,12 +262,12 @@ public class HomeWorld extends World {
     private PopupOverlay.Style popupStyle(int headerHeight, Color backdropColor) {
         return new PopupOverlay.Style(
             backdropColor,
-            new Color(241, 242, 236),
-            new Color(217, 222, 214),
-            new Color(42, 50, 58),
-            new Color(42, 50, 58),
-            Color.WHITE,
-            new Color(42, 50, 58),
+            UiTheme.CARD_BG,
+            UiTheme.HEADER_BAND,
+            UiTheme.BORDER,
+            UiTheme.BTN_PRIMARY,
+            UiTheme.BTN_TEXT,
+            UiTheme.CLOSE_GLYPH,
             headerHeight,
             GameScreenLayout.scale(42),
             GameScreenLayout.scale(16),
@@ -285,19 +282,19 @@ public class HomeWorld extends World {
     }
 
     private void drawPopupTitle(GreenfootImage image, PopupOverlay overlay, String title, int fontSize) {
-        image.setColor(new Color(42, 50, 58));
+        image.setColor(UiTheme.TITLE);
         image.setFont(new Font("SansSerif", true, false, fontSize));
         image.drawString(title, overlay.getCardLeft() + GameScreenLayout.scale(26), overlay.getCardTop() + GameScreenLayout.scale(42));
     }
 
     private void drawSection(GreenfootImage image, String text, int x, int y) {
-        image.setColor(new Color(76, 96, 108));
+        image.setColor(UiTheme.BTN_PRIMARY_BORDER);
         image.setFont(new Font("SansSerif", true, false, GameScreenLayout.scale(15)));
         image.drawString(text, x, y);
     }
 
     private void drawLine(GreenfootImage image, String text, int x, int y) {
-        image.setColor(new Color(42, 50, 58));
+        image.setColor(UiTheme.BODY_STRONG);
         image.setFont(new Font("Monospaced", false, false, GameScreenLayout.scale(15)));
         image.drawString(text, x, y);
     }

@@ -37,13 +37,13 @@ public final class ProgramStopOverlayController {
 
         sessionState.setProgramEndOverlayActive(true);
         PopupOverlay.Style style = new PopupOverlay.Style(
-            new Color(0, 0, 0, 160),
-            new Color(241, 242, 236),
-            new Color(217, 222, 214),
-            new Color(42, 50, 58),
-            new Color(42, 50, 58),
-            Color.WHITE,
-            new Color(42, 50, 58),
+            UiTheme.BACKDROP,
+            UiTheme.CARD_BG,
+            UiTheme.HEADER_BAND,
+            UiTheme.BORDER,
+            UiTheme.BTN_PRIMARY,
+            UiTheme.BTN_TEXT,
+            UiTheme.CLOSE_GLYPH,
             GameScreenLayout.scale(62),
             GameScreenLayout.scale(42),
             GameScreenLayout.scale(16),
@@ -73,12 +73,14 @@ public final class ProgramStopOverlayController {
                 PROGRAM_STOP_CARD_Y,
                 style,
                 (overlay, image) -> {
-                    image.setColor(new Color(42, 50, 58));
+                    image.setColor(UiTheme.TITLE);
                     image.setFont(new Font("SansSerif", true, false, GameScreenLayout.scale(20)));
                     image.drawString(title, overlay.getCardLeft() + GameScreenLayout.scale(24), overlay.getCardTop() + GameScreenLayout.scale(40));
 
+                    image.setColor(UiTheme.BODY);
                     image.setFont(new Font("SansSerif", false, false, GameScreenLayout.scale(15)));
                     image.drawString(message, overlay.getCardLeft() + GameScreenLayout.scale(24), overlay.getCardTop() + GameScreenLayout.scale(96));
+                    image.setColor(UiTheme.BODY_MUTED);
                     image.drawString("Close this message to return to the start.", overlay.getCardLeft() + GameScreenLayout.scale(24), overlay.getCardTop() + GameScreenLayout.scale(120));
                 },
                 buttons,

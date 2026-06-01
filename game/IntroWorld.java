@@ -14,13 +14,17 @@ public class IntroWorld extends World {
 
     // ── Palette ───────────────────────────────────────────────────────────────
 
-    private static final Color PANEL_BG           = new Color(18, 22, 28, 235);
+    private static final Color PANEL_BG           = UiTheme.CARD_BG;
+    // Translucent divider line above the narration panel — intentionally lighter
+    // and semi-transparent so the scene shows through at the seam (intro-specific).
     private static final Color PANEL_BORDER       = new Color(55, 75, 95, 180);
+    // Warm parchment narration text — a deliberate stylistic choice for the story
+    // prose, distinct from the shared card body color.
     private static final Color TEXT_COLOR         = new Color(215, 222, 212);
-    private static final Color BTN_PRIMARY        = new Color(52, 90, 128);
-    private static final Color BTN_PRIMARY_BORDER = new Color(88, 132, 172);
-    private static final Color BTN_GHOST          = new Color(38, 48, 58);
-    private static final Color BTN_GHOST_BORDER   = new Color(65, 82, 98);
+    private static final Color BTN_PRIMARY        = UiTheme.BTN_PRIMARY;
+    private static final Color BTN_PRIMARY_BORDER = UiTheme.BTN_PRIMARY_BORDER;
+    private static final Color BTN_GHOST          = UiTheme.BTN_GHOST;
+    private static final Color BTN_GHOST_BORDER   = UiTheme.BTN_GHOST_BORDER;
 
     // ── Pixel transition ──────────────────────────────────────────────────────
 

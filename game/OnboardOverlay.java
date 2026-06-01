@@ -6,17 +6,19 @@ public class OnboardOverlay extends Actor {
 
     // ── Palette ──────────────────────────────────────────────────────────────
 
+    // Spotlight dimming + glow are onboarding-specific accents; the card chrome
+    // and buttons come from the shared UiTheme palette.
     private static final Color DARK        = new Color(0,   0,   0,   185);
     private static final Color GLOW_1      = new Color(100, 160, 255, 210);
     private static final Color GLOW_2      = new Color(80,  130, 220, 140);
-    private static final Color CARD_BG     = new Color(18,  23,  32,  245);
-    private static final Color CARD_BORDER = new Color(65,  100, 150);
-    private static final Color TITLE_COL   = new Color(210, 225, 245);
-    private static final Color TEXT_COL    = new Color(175, 195, 218);
-    private static final Color BTN_NEXT_BG = new Color(52,  90,  128);
-    private static final Color BTN_NEXT_BD = new Color(88,  132, 172);
-    private static final Color BTN_BACK_BG = new Color(36,  46,  58);
-    private static final Color BTN_BACK_BD = new Color(62,  80,  100);
+    private static final Color CARD_BG     = UiTheme.CARD_BG;
+    private static final Color CARD_BORDER = UiTheme.BORDER;
+    private static final Color TITLE_COL   = UiTheme.TITLE;
+    private static final Color TEXT_COL    = UiTheme.BODY;
+    private static final Color BTN_NEXT_BG = UiTheme.BTN_PRIMARY;
+    private static final Color BTN_NEXT_BD = UiTheme.BTN_PRIMARY_BORDER;
+    private static final Color BTN_BACK_BG = UiTheme.BTN_GHOST;
+    private static final Color BTN_BACK_BD = UiTheme.BTN_GHOST_BORDER;
     private static final Color DOT_ON      = new Color(100, 160, 255);
     private static final Color DOT_OFF     = new Color(50,  65,  85);
 

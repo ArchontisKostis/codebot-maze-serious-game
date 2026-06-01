@@ -28,29 +28,30 @@ public class FinalClassificationWorld extends World {
 
         bg.setColor(new Color(20, 24, 31));
         bg.fill();
-        bg.setColor(new Color(241, 242, 236));
+        bg.setColor(UiTheme.CARD_BG);
         bg.fillRect(cardX, cardY, cardW, cardH);
-        bg.setColor(new Color(217, 222, 214));
+        bg.setColor(UiTheme.HEADER_BAND);
         bg.fillRect(cardX, cardY, cardW, GameScreenLayout.scale(102));
-        bg.setColor(new Color(66, 78, 88));
+        bg.setColor(UiTheme.BORDER);
         bg.drawRect(cardX, cardY, cardW, cardH);
         bg.drawRect(cardX + 1, cardY + 1, cardW - 2, cardH - 2);
 
-        bg.setColor(new Color(42, 50, 58));
+        bg.setColor(UiTheme.BTN_PRIMARY_BORDER);
         bg.setFont(new Font("SansSerif", true, false, GameScreenLayout.scale(15)));
         bg.drawString("PROJECT RIVETS // TRAINING COMPLETE", contentX, cardY + GameScreenLayout.scale(40));
+        bg.setColor(UiTheme.TITLE);
         bg.setFont(new Font("SansSerif", true, false, GameScreenLayout.scale(30)));
         bg.drawString(type, contentX, cardY + GameScreenLayout.scale(86));
 
         drawScoreBox(bg, totalStars, contentX, cardY + GameScreenLayout.scale(138), contentW);
 
         bg.setFont(new Font("SansSerif", false, false, GameScreenLayout.scale(17)));
-        drawWrapped(bg, clearance, contentX, cardY + GameScreenLayout.scale(256), contentW, GameScreenLayout.scale(25), new Color(42, 50, 58), 4);
+        drawWrapped(bg, clearance, contentX, cardY + GameScreenLayout.scale(256), contentW, GameScreenLayout.scale(25), UiTheme.BODY_STRONG, 4);
 
         bg.setFont(new Font("SansSerif", false, false, GameScreenLayout.scale(14)));
         drawWrapped(bg,
             "Classification thresholds: Type III = 40-45 stars, Type II = 28-39 stars, Type I = 15-27 stars. Training below 15 stars remains incomplete.",
-            contentX, cardY + GameScreenLayout.scale(406), contentW, GameScreenLayout.scale(21), new Color(82, 92, 98), 4);
+            contentX, cardY + GameScreenLayout.scale(406), contentW, GameScreenLayout.scale(21), UiTheme.BODY_MUTED, 4);
     }
 
     private void drawScoreBox(GreenfootImage bg, int totalStars, int x, int y, int width) {
