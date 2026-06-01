@@ -8,39 +8,11 @@
 </head>
 <body>
 
-<!-- Top nav -->
-<div class="topnav">
-  <ul>
-    <li><a href="index.html">Overview</a></li>
-    <li><span class="sep">|</span></li>
-    <li><a href="Robot.html">Package</a></li>
-    <li><span class="sep">|</span></li>
-    <li><a href="Robot.html">Class</a></li>
-    <li><span class="sep">|</span></li>
-    <li><strong>Command</strong></li>
-    <li><span class="sep">|</span></li>
-    <li><a href="#">Help</a></li>
-  </ul>
-</div>
-
-<div class="subnav">
-  <div class="subnav-left">
-    <a href="cmd-moveRight.html">PREV COMMAND</a>
-    <span class="sep">|</span>
-    <span class="dim">NEXT COMMAND</span>
-  </div>
-  <div class="subnav-right">
-    <strong>NO FRAMES</strong>
-    <span class="sep">|</span>
-    <a href="index.html">ALL COMMANDS</a>
-  </div>
-</div>
-
 <!-- Content -->
 <div class="content">
 
   <div class="breadcrumb">
-    <a href="Robot.html">Robot</a> &gt; repeat
+    <a href="index.html">Overview</a> &gt; repeat
   </div>
 
   <div class="section-header-dark">Control Structure Detail</div>
@@ -73,29 +45,7 @@
         <code>count</code> &mdash; integer between <strong>1</strong> and
         <strong>100</strong> (inclusive). Values outside this range are errors.
       </dd>
-
-      <dt>Throws:</dt>
-      <dd><code>ParseError</code> &mdash; if <code>count</code> is less than 1 or greater than 100.</dd>
-      <dd><code>ParseError</code> &mdash; if the closing <code>end</code> keyword is missing.</dd>
-      <dd><code>ParseError</code> &mdash; if an <code>end</code> appears without a matching <code>repeat</code>.</dd>
-
-      <dt>Since:</dt>
-      <dd>1.0</dd>
     </dl>
-  </div>
-
-  <!-- Demo -->
-  <div class="demo-section">
-    <h3>Demo</h3>
-    <figure class="demo">
-      <div class="demo-media" data-label="Animation: repeat block executing three moveRight commands in a loop">
-        <video autoplay loop muted playsinline>
-          <source src="../images/docs/repeat.mp4" type="video/mp4" />
-          <img src="../images/docs/repeat.gif" alt="repeat animation" />
-        </video>
-      </div>
-      <figcaption>A <code>repeat(3)</code> block running <code>moveRight</code> three times.</figcaption>
-    </figure>
   </div>
 
   <!-- Examples -->
@@ -212,22 +162,7 @@ end</pre>
 
   </div>
 
-  <!-- Bottom nav -->
-  <div class="bottom-nav">
-    <div class="subnav" style="border:none;background:none;padding:0;">
-      <div class="subnav-left">
-        <a href="cmd-moveRight.html">PREV COMMAND</a>
-        <span class="sep">|</span>
-        <span class="dim">NEXT COMMAND</span>
-      </div>
-      <div class="subnav-right">
-        <strong>NO FRAMES</strong>
-        <span class="sep">|</span>
-        <a href="index.html">ALL COMMANDS</a>
-      </div>
-    </div>
-  </div>
-  <div class="page-footer">Codebot API &nbsp;·&nbsp; codebot.robot &nbsp;·&nbsp; v1.0</div>
+  <div class="page-footer">Codebot API</div>
 
 </div>
 </body>
