@@ -11,7 +11,7 @@ public final class TerminalManager {
     private static final int LINE_HEIGHT = GameScreenLayout.scale(12);
     private static final int PAD_X = GameScreenLayout.scale(14);
     private static final int PAD_Y = GameScreenLayout.scale(33);
-    private static final Color TEXT_COLOR = new Color(180, 240, 180);
+    private static final Color TEXT_COLOR = new Color(5, 233, 189); // #05e9bd
     private static final Color TEXT_BG = new Color(0, 0, 0, 0);
 
     private final SimulationWorld world;
