@@ -31,6 +31,9 @@ public class LevelCompleteOverlay extends Actor {
     // Fraction of the world the panel is allowed to occupy (smaller = more compact).
     private static final double PANEL_FIT = 0.80;
 
+    // Upward nudge from vertical center, as a fraction of world height.
+    private static final double PANEL_Y_OFFSET = 0.035;
+
     // ── Layout in panel-native coordinates (tune against the baked labels) ──────
     private static final int[] COLUMN_X = {238, 453, 674}; // three-up column centers
     private static final int STAR_ROW_Y = 350;             // RIVET box interior
@@ -68,7 +71,7 @@ public class LevelCompleteOverlay extends Actor {
         int panelW = (int) (PANEL_W * scale);
         int panelH = (int) (PANEL_H * scale);
         this.originX = (W - panelW) / 2;
-        this.originY = (H - panelH) / 2;
+        this.originY = (H - panelH) / 2 - (int) (H * PANEL_Y_OFFSET);
 
         world.setLevelCompleteActive(true);
         redraw();
@@ -134,9 +137,14 @@ public class LevelCompleteOverlay extends Actor {
     }
 
     private void drawButtons(GreenfootImage img) {
+        // On the final level there is no next level: the third button takes the
+        // player to the final-results screen instead of advancing.
+        String nextAsset = LevelManager.hasNextLevel()
+            ? "ui/next-lvl-btn.png"
+            : "ui/final-results-btn.png";
         homeBox = drawButton(img, "ui/home-btn.png", COLUMN_X[0]);
         replayBox = drawButton(img, "ui/replay-btn.png", COLUMN_X[1]);
-        nextBox = drawButton(img, "ui/next-lvl-btn.png", COLUMN_X[2]);
+        nextBox = drawButton(img, nextAsset, COLUMN_X[2]);
     }
 
     private int[] drawButton(GreenfootImage img, String asset, int panelColumnX) {
