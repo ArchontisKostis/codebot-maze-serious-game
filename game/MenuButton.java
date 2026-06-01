@@ -3,6 +3,7 @@ import greenfoot.*;
 public class MenuButton extends Actor {
     private final Runnable action;
     private final int fixedWidth;
+    private String clickSound = Sfx.BUTTON_CLICK;
 
     public MenuButton(String text, Runnable action) {
         this(text, action, GameScreenLayout.scale(156));
@@ -41,9 +42,16 @@ public class MenuButton extends Actor {
         }
     }
 
+    /** Override the click sound for this button (e.g. RUN/RESET). Returns this for chaining. */
+    public MenuButton withClickSound(String soundFile) {
+        this.clickSound = soundFile;
+        return this;
+    }
+
     @Override
     public void act() {
         if (Greenfoot.mouseClicked(this)) {
+            Sfx.play(clickSound);
             action.run();
         }
     }

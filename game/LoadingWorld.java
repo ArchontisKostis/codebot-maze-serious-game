@@ -10,7 +10,6 @@ public class LoadingWorld extends World
 {
     private static final int    DISPLAY_TIME = 180;  // acts (~3 s at 60 fps)
     private static final int    BAR_HEIGHT   = 12;
-    private static final Color  BG_COLOR     = new Color(0, 2, 45);
     private static final Color  BAR_COLOR    = new Color(236, 120, 32);
     private static final Color  TRACK_COLOR  = new Color(8, 12, 30, 210);
 
@@ -67,11 +66,10 @@ public class LoadingWorld extends World
         int w = GameScreenLayout.WORLD_WIDTH;
         int h = GameScreenLayout.WORLD_HEIGHT;
 
-        GreenfootImage bg = new GreenfootImage(w, h);
-        bg.setColor(BG_COLOR);
-        bg.fill();
+        GreenfootImage bg = new GreenfootImage("ui/generic-bg.png");
+        bg.scale(w, h);
 
-        GreenfootImage logo = new GreenfootImage("logo/logo_dark_outline.png");
+        GreenfootImage logo = new GreenfootImage("logo/logo_white_outline.png");
         int logoW = w / 2;
         int logoH = logo.getHeight() * logoW / logo.getWidth();
         logo.scale(logoW, logoH);

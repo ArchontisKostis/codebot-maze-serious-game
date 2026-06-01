@@ -35,6 +35,7 @@ public final class AsciiTileMapParser {
         TileMap map = new TileMap();
         int startCol = -1;
         int startRow = -1;
+        int goalCount = 0;
 
         for (int row = 0; row < rows; row++) {
             String line = row < rawLines.length ? rawLines[row] : "";
@@ -50,6 +51,9 @@ public final class AsciiTileMapParser {
                     startCol = col;
                     startRow = row;
                 } else {
+                    if (ch == 'G') {
+                        goalCount++;
+                    }
                     applyNonStartChar(map, col, row, ch);
                 }
             }
@@ -58,6 +62,11 @@ public final class AsciiTileMapParser {
         if (startCol < 0) {
             throw new IllegalArgumentException(
                 "ASCII level must contain exactly one 'S' start tile.");
+        }
+
+        if (goalCount != 1) {
+            throw new IllegalArgumentException(
+                "ASCII level must contain exactly one 'G' goal tile (found " + goalCount + ").");
         }
 
         return new ParsedTileLevel(map, startCol, startRow);

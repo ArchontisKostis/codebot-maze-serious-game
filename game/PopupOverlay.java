@@ -197,12 +197,14 @@ public class PopupOverlay extends Actor {
         int x = mouse.getX();
         int y = mouse.getY();
         if (inside(x, y, closeBoxX(), closeBoxY(), style.closeHitWidth, style.closeHitHeight)) {
+            Sfx.buttonClick();
             close();
             return;
         }
 
         for (Button button : buttons) {
             if (button.isVisible(this) && button.contains(x, y)) {
+                Sfx.buttonClick();
                 button.click(this);
                 return;
             }

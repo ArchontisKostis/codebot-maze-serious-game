@@ -52,6 +52,14 @@ public class LevelManager {
         earnedStars[currentLevel] = Math.max(earnedStars[currentLevel], Math.max(0, Math.min(3, stars)));
     }
 
+    /** Overwrite every level's earned stars (used by the {@code end tier=} cheat to force a final tier). */
+    public static void setAllLevelStars(int stars) {
+        int clamped = Math.max(0, Math.min(3, stars));
+        for (int i = 0; i < earnedStars.length; i++) {
+            earnedStars[i] = clamped;
+        }
+    }
+
     public static int getCurrentLevelStars() {
         return earnedStars[currentLevel];
     }

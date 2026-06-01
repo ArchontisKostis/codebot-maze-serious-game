@@ -48,6 +48,7 @@ public class LevelCompleteOverlay extends Actor {
     private final int stars;
     private final int levelNumber;
     private final int attempts;
+    private final boolean customMode;
 
     private final double scale;
     private final int originX;
@@ -59,10 +60,15 @@ public class LevelCompleteOverlay extends Actor {
     private int[] nextBox;
 
     public LevelCompleteOverlay(SimulationWorld world, int stars, int levelNumber, int attempts) {
+        this(world, stars, levelNumber, attempts, false);
+    }
+
+    public LevelCompleteOverlay(SimulationWorld world, int stars, int levelNumber, int attempts, boolean customMode) {
         this.world = world;
         this.stars = Math.max(0, Math.min(3, stars));
         this.levelNumber = levelNumber;
         this.attempts = attempts;
+        this.customMode = customMode;
 
         // Fit the panel inside the world, keeping aspect ratio with a small margin.
         double byW = (W * PANEL_FIT) / PANEL_W;
@@ -125,8 +131,10 @@ public class LevelCompleteOverlay extends Actor {
 
     private void drawNumbers(GreenfootImage img) {
         // LEVEL value (column 0) and ATTEMPTS value (column 2); SCORE (column 1)
-        // is intentionally left blank — no scoring system exists yet.
-        drawCenteredNumber(img, String.valueOf(levelNumber), COLUMN_X[0], NUMBER_ROW_Y);
+        // is intentionally left blank. Custom levels have no campaign number.
+        if (!customMode) {
+            drawCenteredNumber(img, String.valueOf(levelNumber), COLUMN_X[0], NUMBER_ROW_Y);
+        }
         drawCenteredNumber(img, String.valueOf(attempts), COLUMN_X[2], NUMBER_ROW_Y);
     }
 
@@ -137,6 +145,13 @@ public class LevelCompleteOverlay extends Actor {
     }
 
     private void drawButtons(GreenfootImage img) {
+        if (customMode) {
+            // Free Play: only Replay and Back-to-Free-Play (no campaign Home/Next).
+            replayBox = drawButton(img, "ui/replay-btn.png", COLUMN_X[0]);
+            homeBox = drawButton(img, "ui/home-btn.png", COLUMN_X[2]);
+            nextBox = null;
+            return;
+        }
         // On the final level there is no next level: the third button takes the
         // player to the final-results screen instead of advancing.
         String nextAsset = LevelManager.hasNextLevel()
@@ -169,10 +184,17 @@ public class LevelCompleteOverlay extends Actor {
         int my = mouse.getY();
 
         if (inside(mx, my, homeBox)) {
-            world.goHome();
+            Sfx.buttonClick();
+            if (customMode) {
+                world.goToFreePlay();
+            } else {
+                world.goHome();
+            }
         } else if (inside(mx, my, replayBox)) {
+            Sfx.buttonClick();
             world.replayLevel();
-        } else if (inside(mx, my, nextBox)) {
+        } else if (nextBox != null && inside(mx, my, nextBox)) {
+            Sfx.buttonClick();
             world.advanceToNextLevel();
         }
     }

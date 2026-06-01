@@ -57,9 +57,11 @@ public class OnboardOverlay extends Actor {
         int my = mouse.getY();
 
         if (stepIndex > 0 && inside(mx, my, backX, backY, backW, backH)) {
+            Sfx.buttonClick();
             stepIndex--;
             redraw();
         } else if (inside(mx, my, nextX, nextY, nextW, nextH)) {
+            Sfx.buttonClick();
             if (stepIndex < flow.size() - 1) {
                 stepIndex++;
                 redraw();
@@ -138,15 +140,25 @@ public class OnboardOverlay extends Actor {
         int titleY = cy + GameScreenLayout.scale(20);
         drawWrapped(img, step.title, conX, titleY, conW, titleSize, GameScreenLayout.scale(16), 2);
 
-        // Body lines — each pre-broken line drawn individually (no re-wrap)
+        // Body lines — each source line wrapped to the card width, then drawn.
+        // Wrap only splits lines that overflow; short and code-style lines stay intact.
         int bodySize = GameScreenLayout.scale(11);
         img.setFont(new Font("SansSerif", false, false, bodySize));
         img.setColor(TEXT_COL);
         int lineH = GameScreenLayout.scale(16);
         int bodyY = cy + GameScreenLayout.scale(48);
         int maxBody = (ch - GameScreenLayout.scale(110)) / lineH;
-        for (int i = 0; i < step.lines.length && i < maxBody; i++) {
-            img.drawString(step.lines[i], conX, bodyY + i * lineH);
+        int bodyChars = Math.max(8, conW / Math.max(1, (int)(bodySize * 0.60)));
+        List<String> bodyLines = new ArrayList<>();
+        for (String line : step.lines) {
+            if (line.isEmpty()) {
+                bodyLines.add("");                 // preserve intentional blank lines
+            } else {
+                bodyLines.addAll(wrap(line, bodyChars));
+            }
+        }
+        for (int i = 0; i < bodyLines.size() && i < maxBody; i++) {
+            img.drawString(bodyLines.get(i), conX, bodyY + i * lineH);
         }
 
         // Step dots
@@ -262,9 +274,18 @@ public class OnboardOverlay extends Actor {
 
     private List<String> wrap(String text, int maxChars) {
         List<String> result = new ArrayList<>();
-        String[] words = text.split(" ");
         StringBuilder line = new StringBuilder();
-        for (String word : words) {
+        for (String word : text.split(" ")) {
+            // Hard-break a single token too long to ever fit (e.g. a URL) so it
+            // never overflows the card horizontally.
+            while (word.length() > maxChars) {
+                if (line.length() > 0) {
+                    result.add(line.toString());
+                    line = new StringBuilder();
+                }
+                result.add(word.substring(0, maxChars));
+                word = word.substring(maxChars);
+            }
             if (line.length() == 0) {
                 line.append(word);
             } else if (line.length() + 1 + word.length() <= maxChars) {

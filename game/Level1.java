@@ -41,9 +41,15 @@ public class Level1 implements Level {
         }
     }
 
+    /** Embedded {@code .lvl} document: header + the grid above, parsed by {@link LevelDocumentParser}. */
+    private static final String DOCUMENT =
+        "name: Straight Shot\n"
+        + "scorer: completion\n"
+        + "---\n"
+        + String.join("\n", LEVEL_LINES);
+
     @Override
     public void setup(SimulationWorld world) {
-        ParsedTileLevel parsed = AsciiTileMapParser.parse(LEVEL_LINES);
-        world.installTileLevel(parsed);
+        world.installLevelDefinition(LevelDocumentParser.parse(DOCUMENT));
     }
 }

@@ -52,9 +52,16 @@ public class Level15 implements Level {
         }
     }
 
+    /** Embedded {@code .lvl} document: header + the grid above, parsed by {@link LevelDocumentParser}. */
+    private static final String DOCUMENT =
+        "name: Final Chamber\n"
+        + "scorer: abstraction\n"
+        + "stars: 25,75\n"
+        + "---\n"
+        + String.join("\n", LEVEL_LINES);
+
     @Override
     public void setup(SimulationWorld world) {
-        ParsedTileLevel parsed = AsciiTileMapParser.parse(LEVEL_LINES);
-        world.installTileLevel(parsed);
+        world.installLevelDefinition(LevelDocumentParser.parse(DOCUMENT));
     }
 }

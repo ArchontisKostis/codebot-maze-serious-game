@@ -56,6 +56,9 @@ public class SimulationWorld extends World {
     private CodeEditor  editor;
     private Level       level;
     private TileMap     tileMap;
+    private LevelDefinition levelDefinition;
+    private final boolean customMode;
+    private String hudTitle = "TRAINING SIMULATION";
     private final MyWorldSessionState sessionState;
 
     private final TerminalManager terminalManager;
@@ -70,8 +73,18 @@ public class SimulationWorld extends World {
     // ── Constructor ───────────────────────────────────────────────────────────
 
     public SimulationWorld(Level level) {
+        this(level, false);
+    }
+
+    /**
+     * @param customMode when true this is a Free Play (custom) level: completion-only
+     *     scoring, no onboarding, no next-level advance, HUD title from the level name,
+     *     and no writes to campaign progress.
+     */
+    public SimulationWorld(Level level, boolean customMode) {
         super(GameScreenLayout.WORLD_WIDTH, GameScreenLayout.WORLD_HEIGHT, 1);
         this.level = level;
+        this.customMode = customMode;
         this.sessionState = new MyWorldSessionState();
         // initialize managers used by UI and actors
         this.terminalManager = new TerminalManager(this);
@@ -83,6 +96,7 @@ public class SimulationWorld extends World {
         this.cheatEngine.register("coins",    args -> collectAllCoins());
         this.cheatEngine.register("stars",    args -> LevelManager.recordCurrentLevelStars(3));
         this.cheatEngine.register("resetAll", args -> { LevelManager.resetProgress(); goToLevel(1); });
+        this.cheatEngine.register("end",      this::goToEnd);
         drawStaticUI();
         createActors();
         this.executionService = new ProgramExecutionService(
@@ -103,12 +117,14 @@ public class SimulationWorld extends World {
         terminalManager.redraw();
         redrawHUD();
 
-        int levelNumber = LevelManager.getCurrentLevelNumber();
-        OnboardFlow onboardFlow = OnboardRegistry.forLevel(levelNumber);
-        if (onboardFlow != null) {
-            addObject(new OnboardOverlay(onboardFlow, this),
-                GameScreenLayout.WORLD_WIDTH / 2,
-                GameScreenLayout.WORLD_HEIGHT / 2);
+        if (!customMode) {
+            int levelNumber = LevelManager.getCurrentLevelNumber();
+            OnboardFlow onboardFlow = OnboardRegistry.forLevel(levelNumber);
+            if (onboardFlow != null) {
+                addObject(new OnboardOverlay(onboardFlow, this),
+                    GameScreenLayout.WORLD_WIDTH / 2,
+                    GameScreenLayout.WORLD_HEIGHT / 2);
+            }
         }
     }
 
@@ -186,21 +202,21 @@ public class SimulationWorld extends World {
         int imgH = (int)(buttonH * 0.90);
 
         if (runImg != null) {
-            addObject(new MenuButton(runImg, () -> runScript(), imgRunW, imgH),
+            addObject(new MenuButton(runImg, () -> runScript(), imgRunW, imgH).withClickSound(Sfx.RUN_CLICK),
                 buttonRowX + runButtonW / 2,
                 buttonY);
         } else {
-            addObject(new MenuButton("RUN", () -> runScript(), runButtonW),
+            addObject(new MenuButton("RUN", () -> runScript(), runButtonW).withClickSound(Sfx.RUN_CLICK),
                 buttonRowX + runButtonW / 2,
                 buttonY);
         }
 
         if (resetImg != null) {
-            addObject(new MenuButton(resetImg, () -> resetEditor(), imgResetW, imgH),
+            addObject(new MenuButton(resetImg, () -> resetEditor(), imgResetW, imgH).withClickSound(Sfx.RESET_CLICK),
                 buttonRowX + runButtonW + buttonGap + resetButtonW / 2,
                 buttonY);
         } else {
-            addObject(new MenuButton("RESET", () -> resetEditor(), resetButtonW),
+            addObject(new MenuButton("RESET", () -> resetEditor(), resetButtonW).withClickSound(Sfx.RESET_CLICK),
                 buttonRowX + runButtonW + buttonGap + resetButtonW / 2,
                 buttonY);
         }
@@ -232,9 +248,10 @@ public class SimulationWorld extends World {
         addObject(
             new LevelCompleteOverlay(
                 this,
-                LevelManager.getCurrentLevelStars(),
+                sessionState.getLastStars(),
                 LevelManager.getCurrentLevelNumber(),
-                sessionState.getAttempts()),
+                sessionState.getAttempts(),
+                customMode),
             GameScreenLayout.WORLD_WIDTH / 2,
             GameScreenLayout.WORLD_HEIGHT / 2);
     }
@@ -244,7 +261,16 @@ public class SimulationWorld extends World {
     }
 
     public void replayLevel() {
-        Greenfoot.setWorld(new LoadingWorld(() -> new SimulationWorld(LevelManager.getCurrentLevel())));
+        if (customMode) {
+            Greenfoot.setWorld(new LoadingWorld(() -> new SimulationWorld(level, true)));
+        } else {
+            Greenfoot.setWorld(new LoadingWorld(() -> new SimulationWorld(LevelManager.getCurrentLevel())));
+        }
+    }
+
+    /** Returns to the Free Play screen (used by the custom Level Complete panel's Back button). */
+    public void goToFreePlay() {
+        Greenfoot.setWorld(new FreePlayWorld());
     }
 
     public void advanceToNextLevel() {
@@ -369,8 +395,8 @@ public class SimulationWorld extends World {
         bg.drawImage(lblAttemptsImg, attemptsX, lvlY);
         bg.drawImage(numAttemptsImg, attemptsX + lblAttemptsImg.getWidth() + GameScreenLayout.scale(8), lvlY);
 
-        // Draw centered title (e.g. "TRAINING SIMULATION") in the middle of the HUD.
-        String title = "TRAINING SIMULATION";
+        // Draw centered title in the middle of the HUD (custom levels show their name).
+        String title = hudTitle;
         int titleFont = GameScreenLayout.scale(14);
         Color titleColor = new Color(150, 130, 230);
         GreenfootImage titleImg = new GreenfootImage(title, titleFont, titleColor, new Color(0,0,0,0));
@@ -391,6 +417,25 @@ public class SimulationWorld extends World {
      */
     public void installTileLevel(ParsedTileLevel parsed) {
         installTileLevel(parsed.tileMap, parsed.startCol, parsed.startRow);
+    }
+
+    /**
+     * Installs a parsed {@link LevelDefinition}: paints its grid and configures
+     * star scoring from the definition's scorer/thresholds. Called by every
+     * {@link Level} (built-in and custom) so all levels share one install path.
+     */
+    public void installLevelDefinition(LevelDefinition def) {
+        this.levelDefinition = def;
+        // The mode decides scoring/onboarding — a custom document's scorer/stars are ignored.
+        ScorerKind scorer = customMode ? ScorerKind.COMPLETION : def.scorer;
+        int twoStar = customMode ? LevelDefinition.DEFAULT_TWO_STAR : def.twoStarThreshold;
+        int threeStar = customMode ? LevelDefinition.DEFAULT_THREE_STAR : def.threeStarThreshold;
+        progressionController.setScoring(scorer, twoStar, threeStar);
+        progressionController.setRecordToCampaign(!customMode);
+        if (customMode) {
+            this.hudTitle = def.hasName() ? def.name.toUpperCase() : "CUSTOM LEVEL";
+        }
+        installTileLevel(def.tileMap, def.startCol, def.startRow);
     }
 
     public void installTileLevel(TileMap map, int startCol, int startRow) {
@@ -416,5 +461,19 @@ public class SimulationWorld extends World {
     private void goToLevel(int n) {
         LevelManager.setCurrentLevel(n - 1);
         Greenfoot.setWorld(new LoadingWorld(() -> new SimulationWorld(LevelManager.getCurrentLevel())));
+    }
+
+    /**
+     * Cheat: jump straight to the final classification screen.
+     * {@code end} uses the stars earned so far; {@code end <1|2|3>} forces every
+     * level to 1/2/3 stars first, landing the total in the Type I/II/III band.
+     * (The editor can't type {@code =}, so the tier is a bare digit argument.)
+     */
+    private void goToEnd(String[] args) {
+        if (args.length > 0) {
+            int tier = Math.max(1, Math.min(3, Integer.parseInt(args[0])));
+            LevelManager.setAllLevelStars(tier);
+        }
+        Greenfoot.setWorld(new FinalClassificationWorld());
     }
 }

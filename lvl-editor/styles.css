@@ -1,0 +1,219 @@
+/* Navy "RIVETS terminal" theme — mirrors the game's UiTheme palette. */
+:root {
+  --bg: #060912;            /* deep navy page (game panel base #010412) */
+  --panel: #12161e;         /* UiTheme CARD_BG (18,22,30) */
+  --panel-2: #0c0f17;       /* darker inset */
+  --border: #416496;        /* UiTheme BORDER (65,100,150) */
+  --border-bright: #5884ac; /* UiTheme BTN_PRIMARY_BORDER (88,132,172) */
+  --text: #d2e1f5;          /* UiTheme TITLE (210,225,245) */
+  --muted: #8798ac;         /* UiTheme BODY_MUTED (135,152,172) */
+  --accent: #2cdcd7;        /* HUD cyan (44,220,215) */
+  --accent-dim: #1f9e96;
+  --terminal: #05e9bd;      /* TerminalManager text (5,233,189) */
+  --danger: #e0603a;        /* warning orange-red */
+  --btn: #345a80;           /* UiTheme BTN_PRIMARY (52,90,128) */
+  --btn-ghost: #26303a;     /* UiTheme BTN_GHOST (38,48,58) */
+  /* tile-derived swatch colors (sampled from the game sprites) */
+  --sw-wall: #b0352b;
+  --sw-floor: #1a2438;
+  --sw-coin: #f5c518;
+  --sw-goal: #1f9e7a;
+  --sw-start: #4aa3e0;
+  --grid-line: rgba(110, 135, 170, 0.16);
+  --mono: "Cascadia Code", "Consolas", "SFMono-Regular", ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+code { color: var(--accent); }
+
+.topbar {
+  padding: 18px 24px 12px;
+  border-bottom: 1px solid var(--border);
+}
+.topbar h1 {
+  margin: 0;
+  font-size: 20px;
+  letter-spacing: 2px;
+}
+.topbar .accent { color: var(--accent); }
+.tagline { margin: 6px 0 0; color: var(--muted); }
+
+.layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: flex-start;
+  padding: 20px 24px 40px;
+}
+
+.editor-pane { flex: 1 1 660px; min-width: 320px; }
+.side-pane { flex: 1 1 340px; min-width: 300px; display: flex; flex-direction: column; gap: 16px; }
+
+/* ── Palette ──────────────────────────────────────────────────────────────── */
+.palette {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--panel);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+}
+.tool:hover { border-color: var(--border-bright); }
+.tool.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+  color: var(--accent);
+}
+.swatch {
+  width: 20px; height: 20px;
+  border-radius: 3px;
+  object-fit: cover;
+  background: var(--sw-floor);
+  image-rendering: auto;
+}
+
+/* ── Canvas + frame ───────────────────────────────────────────────────────── */
+/* Matches the game: the frame covers the whole 24:20 play-area box. The grid
+   fills the box (square tiles) and the frame is stretched to that same box and
+   laid on top, so its border CLIPS the outer ~2 rows/columns on every side —
+   both vertically and horizontally — exactly as the game does. The editor is
+   then WYSIWYG with what the game actually shows. */
+.frame-stage {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  max-width: 780px;
+  aspect-ratio: 24 / 20;   /* the play-area box; canvas's intrinsic ratio → square tiles */
+}
+#grid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;            /* grid fills the box edge-to-edge */
+  z-index: 1;
+  cursor: crosshair;
+  touch-action: none;
+}
+.frame-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;            /* stretched to the box; border clips the outer ~2 rows/cols */
+  z-index: 2;
+  pointer-events: none;    /* clicks pass through to the canvas */
+}
+.hint { color: var(--muted); margin: 8px 0 4px; font-size: 12px; }
+
+/* ── Validity banner ──────────────────────────────────────────────────────── */
+.validity {
+  margin: 10px 0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  font-size: 13px;
+}
+.validity.ok { border-color: var(--accent-dim); color: var(--accent); }
+.validity.bad { border-color: var(--danger); color: var(--danger); }
+
+/* ── Metadata ─────────────────────────────────────────────────────────────── */
+.meta { display: flex; gap: 12px; flex-wrap: wrap; margin: 12px 0; }
+.meta label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); flex: 1 1 180px; }
+.meta input {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  padding: 7px 9px;
+  font-family: inherit;
+  font-size: 13px;
+}
+.meta input:focus, textarea:focus { outline: none; border-color: var(--accent); }
+
+/* ── Gallery ──────────────────────────────────────────────────────────────── */
+.gallery { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+.gallery-label { color: var(--muted); font-size: 12px; }
+.gallery-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+.gallery-buttons .btn { font-size: 12px; }
+
+/* ── Side panels ──────────────────────────────────────────────────────────── */
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px 16px 16px;
+}
+.panel h2 {
+  margin: 0 0 10px;
+  font-size: 14px;
+  letter-spacing: 1px;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+.panel-hint { color: var(--muted); font-size: 12px; margin: 0 0 10px; }
+.field { margin-bottom: 14px; }
+.field:last-child { margin-bottom: 0; }
+.field-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.field-head label { font-size: 12px; color: var(--muted); }
+.field-actions { display: flex; gap: 6px; }
+
+textarea {
+  width: 100%;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12px;
+  padding: 8px;
+  resize: vertical;
+}
+textarea.output { white-space: pre; overflow-wrap: normal; color: var(--terminal); }
+
+/* ── Buttons ──────────────────────────────────────────────────────────────── */
+.btn {
+  background: var(--panel-2);
+  border: 1px solid var(--border-bright);
+  border-radius: 4px;
+  color: var(--text);
+  padding: 6px 12px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+}
+.btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn.flash { border-color: var(--accent); color: var(--accent); }
+.file-btn { display: inline-flex; align-items: center; }
+
+.import-actions { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.import-msg { margin-top: 10px; font-size: 13px; min-height: 18px; }
+.import-msg.ok { color: var(--accent); }
+.import-msg.bad { color: var(--danger); }

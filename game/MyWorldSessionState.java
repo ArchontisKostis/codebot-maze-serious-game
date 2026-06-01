@@ -4,6 +4,7 @@ public final class MyWorldSessionState {
     private int goalAdvanceCountdown;
     private int totalCoins;
     private int coinsCollected;
+    private int lastStars;
     private Program lastProgram;
     private boolean introOverlayActive;
     private boolean programEndOverlayActive;
@@ -55,6 +56,14 @@ public final class MyWorldSessionState {
 
     public void incrementCoinsCollected() {
         coinsCollected++;
+    }
+
+    public int getLastStars() {
+        return lastStars;
+    }
+
+    public void setLastStars(int lastStars) {
+        this.lastStars = lastStars;
     }
 
     public Program getLastProgram() {

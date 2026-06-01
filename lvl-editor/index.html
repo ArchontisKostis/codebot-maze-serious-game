@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Codebot — Level Editor</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>CODEBOT <span class="accent">// LEVEL EDITOR</span></h1>
+    <p class="tagline">Draw a 24×20 maze and export it as a <code>.lvl</code> file or share-code the game can load.</p>
+  </header>
+
+  <main class="layout">
+    <!-- ── Canvas + editing controls ─────────────────────────────────────── -->
+    <section class="editor-pane">
+      <div class="palette" id="palette" role="toolbar" aria-label="Tile tools">
+        <button class="tool" data-tool="wall"  type="button"><img class="swatch" src="assets/wall.png"  alt="" />Wall</button>
+        <button class="tool" data-tool="floor" type="button"><img class="swatch" src="assets/floor.png" alt="" />Floor</button>
+        <button class="tool" data-tool="start" type="button"><img class="swatch" src="assets/robot.png" alt="" />Start</button>
+        <button class="tool" data-tool="goal"  type="button"><img class="swatch" src="assets/goal.png"  alt="" />Goal</button>
+        <button class="tool" data-tool="coin"  type="button"><img class="swatch" src="assets/coin.png"  alt="" />Coin</button>
+      </div>
+
+      <div class="frame-stage">
+        <canvas id="grid" aria-label="Level grid"></canvas>
+        <img class="frame-bg" src="assets/frame.png" alt="" />
+      </div>
+
+      <p class="hint">Click or drag to paint. Start and goal relocate — there is only ever one of each.</p>
+
+      <div id="validity" class="validity" role="status" aria-live="polite"></div>
+
+      <div class="meta">
+        <label>Name <input id="name" type="text" maxlength="60" placeholder="(optional)" /></label>
+        <label>Author <input id="author" type="text" maxlength="60" placeholder="(optional)" /></label>
+      </div>
+
+      <div class="gallery">
+        <span class="gallery-label">Start from:</span>
+        <div id="gallery-buttons" class="gallery-buttons"></div>
+      </div>
+    </section>
+
+    <!-- ── Export / Import side panel ────────────────────────────────────── -->
+    <aside class="side-pane">
+      <section class="panel">
+        <h2>Export</h2>
+
+        <div class="field">
+          <div class="field-head">
+            <label for="lvl-text"><code>.lvl</code> text</label>
+            <div class="field-actions">
+              <button id="copy-lvl" class="btn" type="button">Copy</button>
+              <button id="download-lvl" class="btn" type="button">Download</button>
+            </div>
+          </div>
+          <textarea id="lvl-text" class="output" rows="8" readonly spellcheck="false"></textarea>
+        </div>
+
+        <div class="field">
+          <div class="field-head">
+            <label for="b64-text">Share-code (base64, single line)</label>
+            <div class="field-actions">
+              <button id="copy-b64" class="btn" type="button">Copy</button>
+            </div>
+          </div>
+          <textarea id="b64-text" class="output" rows="3" readonly spellcheck="false"></textarea>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Import</h2>
+        <p class="panel-hint">Paste a <code>.lvl</code> document or a share-code, or upload a <code>.lvl</code> file.</p>
+        <textarea id="import-text" class="input" rows="6" spellcheck="false" placeholder="Paste .lvl text or base64 share-code…"></textarea>
+        <div class="import-actions">
+          <button id="import-btn" class="btn" type="button">Load from text</button>
+          <label class="btn file-btn">Upload .lvl<input id="import-file" type="file" accept=".lvl,text/plain" hidden /></label>
+        </div>
+        <div id="import-msg" class="import-msg" role="status" aria-live="polite"></div>
+      </section>
+    </aside>
+  </main>
+
+  <script src="format.js"></script>
+  <script src="templates.js"></script>
+  <script src="editor.js"></script>
+</body>
+</html>

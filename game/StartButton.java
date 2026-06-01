@@ -14,6 +14,7 @@ public class StartButton extends Actor
 
     public void act() {
         if (Greenfoot.mouseClicked(this)) {
+            Sfx.buttonClick();
             Greenfoot.setWorld(new SimulationWorld( LevelManager.getCurrentLevel() ));
         }
     }

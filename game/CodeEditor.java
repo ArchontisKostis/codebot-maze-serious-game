@@ -139,6 +139,7 @@ public class CodeEditor extends Actor {
         int localY = mouse.getY() - (getY() - H / 2);
 
         if (Greenfoot.mouseClicked(this) && stepAction != null && insideStepButton(localX, localY)) {
+            Sfx.buttonClick();
             stepAction.run();
             return;
         }
