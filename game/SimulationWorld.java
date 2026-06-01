@@ -204,10 +204,6 @@ public class SimulationWorld extends World {
                 buttonRowX + runButtonW + buttonGap + resetButtonW / 2,
                 buttonY);
         }
-
-        addObject(new ClearOutputButton(() -> terminalManager.clear()),
-            TERMINAL_X + TERMINAL_W - GameScreenLayout.scale(22),
-            TERMINAL_Y + GameScreenLayout.scale(15));
     }
 
     // ── Act ───────────────────────────────────────────────────────────────────
