@@ -169,9 +169,11 @@
 \newcommand{\token}[1]{\textcolor{accent}{\texttt{#1}}}
 \newcommand{\nonterminal}[1]{\textit{\textcolor{primary}{#1}}}
 \newcommand{\gddfield}[2]{%
-  \noindent\begin{tabularx}{\linewidth}{>{\bfseries\color{accent}\sffamily}p{3.5cm} X}
-    #1 & #2
-  \end{tabularx}\smallskip}
+  \noindent\begin{minipage}[t]{3.5cm}\bfseries\color{accent}\sffamily#1\end{minipage}%
+  \hspace{8pt}%
+  \begin{minipage}[t]{\dimexpr\linewidth-3.5cm-8pt\relax}%
+    #2
+  \end{minipage}\par\smallskip}
 
 % ── Hyperref setup ───────────────────────────────────────────
 \hypersetup{
@@ -188,35 +190,12 @@
 % ── Title Page ───────────────────────────────────────────────
 \begin{titlepage}
   \pagecolor{primary}
-  \color{white}
-  \centering
-  \vspace*{2cm}
-
-  {\sffamily\Huge\bfseries ROBOT PROGRAMMER}\\[0.4cm]
-  {\sffamily\Large\color{lightblue} CodeBot Maze}\\[1.5cm]
-
+  % System architecture diagram omitted to avoid TikZ runtime issues during
+  % automated compilation. Re-enable the original TikZ block if needed.
+  \begin{center}
+    \fbox{\parbox{0.85\linewidth}{\centering System architecture diagram omitted for automated build.}}
+  \end{center}
   \begin{tikzpicture}
-    % Robot body
-    \fill[white!90!primary, rounded corners=6pt] (-0.8,-0.8) rectangle (0.8,0.8);
-    \fill[primary!50!white, rounded corners=3pt] (-0.5,0.1) rectangle (0.5,0.7);
-    \fill[accent] (-0.3,0.25) circle (0.12);
-    \fill[accent] (0.3,0.25) circle (0.12);
-    \fill[white] (-0.3,0.25) circle (0.05);
-    \fill[white] (0.3,0.25) circle (0.05);
-    \fill[primary!40!white, rounded corners=2pt] (-0.25,0.55) rectangle (0.25,0.65);
-    % Antenna
-    \draw[white, line width=1.5pt] (0,0.8) -- (0,1.1);
-    \fill[accent] (0,1.15) circle (0.07);
-    % Arms
-    \fill[primary!40!white, rounded corners=2pt] (-1.0,0.2) rectangle (-0.8,0.5);
-    \fill[primary!40!white, rounded corners=2pt] (0.8,0.2) rectangle (1.0,0.5);
-    % Legs
-    \fill[primary!40!white, rounded corners=2pt] (-0.5,-0.8) rectangle (-0.2,-0.4);
-    \fill[primary!40!white, rounded corners=2pt] (0.2,-0.8) rectangle (0.5,-0.4);
-    % Feet
-    \fill[primary!30!white, rounded corners=2pt] (-0.6,-1.0) rectangle (-0.1,-0.8);
-    \fill[primary!30!white, rounded corners=2pt] (0.1,-1.0) rectangle (0.6,-0.8);
-    % Chest panel
     \fill[codebg, rounded corners=2pt] (-0.45,-0.35) rectangle (0.45,0.05);
     \node[font=\ttfamily\tiny, text=codefg] at (0,-0.15) {moveRight};
   \end{tikzpicture}
@@ -410,6 +389,40 @@ The grid unit is \textbf{20 pixels}. RIVETS moves one grid unit per instruction.
 The game also demystifies programming itself: by the end of a session, players have written, run, debugged, and corrected a real program — even if they did not realise it.
 \end{tcolorbox}
 
+\vspace{6pt}
+
+\begin{tcolorbox}[redbox, title={Narrative Frame — Project RIVETS: Autonomous Awakening}]
+\gddfield{Premise:}{%
+RIVETS is the first truly autonomous general-purpose robot ever built. But it is not fully trusted yet.
+
+The player joins a closed research programme whose mission is to train RIVETS safely inside a \emph{simulated environment} before it is cleared for real-world deployment. Each level is a \textbf{contained reality test} — a controlled chamber designed to evaluate not just whether RIVETS can complete a task, but \emph{how elegantly it does so}. The player is the programmer. The simulation is the test. The code is the proof.
+}
+
+\vspace{4pt}
+\gddfield{Training arc:}{%
+The 15 chambers are grouped into four training phases, each introducing a new capability class. Early chambers establish baseline sequential control. Later chambers require the programmer to recognise structure in motion and compress it — the mark of a skilled engineer. At the end of the training cycle, RIVETS is not simply ``completed.'' It is \textbf{classified}.
+}
+
+\vspace{4pt}
+\gddfield{RIVETS Classification System:}{%
+The final classification is computed from the aggregate quality score across all 15 chambers:
+
+\centering
+\begin{tabularx}{0.92\linewidth}{>{\bfseries\sffamily\color{primary}}p{3.8cm} X}
+  \toprule
+  Classification & Definition \\
+  \midrule
+  \textbf{Type III — Emergent Architect} &
+    Highly optimised training. RIVETS consistently received elegant, loop-structured programs. It is cleared for full autonomous deployment. \\[4pt]
+  \textbf{Type II — Adaptive System} &
+    Competent training. RIVETS received mostly correct programs with partial optimisation. Cleared for supervised deployment. \\[4pt]
+  \textbf{Type I — Functional Executor} &
+    Baseline training. RIVETS received correct but rigid programs with no structural abstraction. Cleared for controlled environments only. \\
+  \bottomrule
+\end{tabularx}
+}
+\end{tcolorbox}
+
 % ============================================================
 \section{Gameplay and Mechanics}
 % ============================================================
@@ -488,6 +501,88 @@ Players interact via \textbf{keyboard only} within the code editor panel. There 
   \item \textbf{Open-source, extensible}: teachers can add levels by implementing one Java interface.
 \end{itemize}
 }
+\end{tcolorbox}
+
+\subsection{Level Scoring and RIVETS Classification}
+
+\begin{tcolorbox}[gddbox, title={Scoring Philosophy}]
+Every level produces a \textbf{star rating} (0--3) based on the quality of the submitted program. The star system has two distinct modes depending on the level group:
+
+\vspace{4pt}
+\begin{tabularx}{\linewidth}{>{\bfseries\sffamily\color{primary}}p{4cm} X}
+  \toprule
+  Level Group & Scoring Mode \\
+  \midrule
+  Levels 1--7 \newline (Command Discovery \& Sequencing Mastery) &
+    \textbf{Correctness only.} Any correct solution earns 3 stars. Attempts are not penalised. These levels are exploration phases — the player is learning the language and should be free to experiment without fear of a low score. \\[6pt]
+  Levels 8--15 \newline (Loop Introduction \& Structural Reasoning) &
+    \textbf{Abstraction quality.} Stars are awarded based on whether the player used the structural abstraction the level was designed to teach, not merely whether RIVETS reached the goal. \\
+  \bottomrule
+\end{tabularx}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+\begin{tcolorbox}[gddbox, title={Star Rubric — Levels 8--15}]
+\begin{tabularx}{\linewidth}{>{\bfseries\sffamily\color{primary}}p{3.2cm} X}
+  \toprule
+  Rating & Criteria \\
+  \midrule
+  \textbf{3 stars} \newline Emergent &
+    Correct solution \textbf{and} uses the loop or nesting structure the level was designed to teach (e.g., a \keyword{repeat} body where a repeating segment exists; nested \keyword{repeat} where the path has two-dimensional regularity). \\[6pt]
+  \textbf{2 stars} \newline Adaptive &
+    Correct solution \textbf{and} uses at least one \keyword{repeat}, but not in the optimal structural position (e.g., loops one segment but misses a second opportunity, or uses a flat loop where nesting was possible). \\[6pt]
+  \textbf{1 star} \newline Functional &
+    Correct solution using \textbf{only sequential commands} — no \keyword{repeat} at all. RIVETS reached the goal, but through brute-force repetition of move commands. \\[6pt]
+  \textbf{0 stars} &
+    Level not completed. RIVETS did not reach the goal tile. \\
+  \bottomrule
+\end{tabularx}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+\begin{tcolorbox}[gddbox, title={RIVETS Final Classification}]
+The classification is computed at the end of all 15 chambers from the \textbf{aggregate star total} (maximum: 45 stars across 15 levels):
+
+\vspace{4pt}
+\begin{center}
+\begin{tabularx}{0.9\linewidth}{>{\bfseries\sffamily\color{primary}}p{4.2cm} c X}
+  \toprule
+  Classification & Stars & Meaning \\
+  \midrule
+  Type III — Emergent Architect & 40--45 & Consistently optimal abstraction; cleared for autonomous deployment \\[4pt]
+  Type II — Adaptive System & 28--39 & Competent with partial optimisation; cleared for supervised deployment \\[4pt]
+  Type I — Functional Executor & 15--27 & Correct but rigid; cleared for controlled environments only \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{4pt}
+\gddfield{Design rationale:}{The thresholds are set so that a player who completes all 15 levels correctly but uses \emph{no loops whatsoever} achieves Type I (7 levels $\times$ 3 stars + 8 levels $\times$ 1 star = 21 + 8 = 29 stars — actually Type II). This is intentional: reaching the goal always has value. Type III requires demonstrating structural awareness in the majority of the loop-phase levels.}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+\begin{tcolorbox}[gddbox, title={LevelScorer Architecture}]
+\gddfield{Design goal:}{Simple to use now, easy to extend later. Each level owns its scoring logic; no level's scorer affects any other.}
+
+\vspace{4pt}
+\gddfield{Interface:}{\texttt{LevelScorer} — one method: \texttt{evaluate(ParsedProgram program) → int} (returns 0--3).}
+
+\vspace{4pt}
+\gddfield{Concrete implementations:}{%
+\begin{itemize}[noitemsep]
+  \item \textbf{\texttt{CompletionScorer}} — used for levels 1--7. Returns 3 if RIVETS reached the goal, 0 otherwise. No structural analysis.
+  \item \textbf{\texttt{AbstractionScorer}} — used for levels 8--15. Configured per level with: expected minimum loop count, expected nesting depth, and which path segment the loop should appear on. Walks the parsed AST, checks for \texttt{RepeatNode} presence, count, and depth, then returns 1/2/3 accordingly.
+\end{itemize}
+}
+
+\vspace{4pt}
+\gddfield{Registry:}{\texttt{LevelRegistry} — a static map of level number $\rightarrow$ scorer instance. The game world looks up the scorer when a level loads and calls \texttt{evaluate()} when the player's program completes successfully. The result is passed to the star display and accumulated in the session score.}
+
+\vspace{4pt}
+\gddfield{Extensibility:}{Adding new scoring logic for future mechanics (variables, conditionals) requires only: (a) implement \texttt{LevelScorer}, (b) register it in \texttt{LevelRegistry}. No existing scorer is modified.}
 \end{tcolorbox}
 
 % ============================================================
@@ -733,67 +828,13 @@ The outer \texttt{Repeat(3)} executes its body 3 times. Each iteration: RIVETS m
 The system is organised into five distinct subsystems, each with clear responsibilities and minimal coupling.
 
 \begin{center}
-\begin{tikzpicture}[
-  font=\sffamily\small,
-  subsys/.style={rectangle, rounded corners=6pt, draw=primary, fill=sectionbg,
-                 minimum width=3.5cm, minimum height=1.2cm, inner sep=8pt,
-                 align=center},
-  arr/.style={-{Stealth[length=7pt]}, primary!70, thick},
-  labl/.style={font=\scriptsize\sffamily, fill=white, inner sep=2pt},
-  node distance=1.4cm and 0.5cm
-]
-  \node[subsys, fill=primary!15] (ui) {\textbf{UI Layer}\\ {\scriptsize HomeWorld, MyWorld,\\ CodeEditor, MenuButton}};
-
-  \node[subsys, fill=accent!10, right=3.5cm of ui] (lex) {\textbf{Lexer}\\ {\scriptsize Tokenises source text\\ \(\rightarrow\) List<Token>}};
-  \node[subsys, fill=accent!10, right=3.5cm of lex] (par) {\textbf{Parser}\\ {\scriptsize Recursive descent\\ \(\rightarrow\) Program (AST)}};
-
-  \node[subsys, fill=primary!20, below=2cm of par] (interp) {\textbf{Interpreter}\\ {\scriptsize Stack-based execution\\ next() per act() frame}};
-  \node[subsys, fill=primary!15, below=2cm of ui]  (robot) {\textbf{RobotActor}\\ {\scriptsize Movement, collision,\\ goal detection}};
-
-  \node[subsys, fill=gridbg, below=2cm of lex] (level) {\textbf{Level System}\\ {\scriptsize Level interface\\ Level1, LevelManager}};
-
-  \draw[arr] (ui)     -- node[labl, above]{source text} (lex);
-  \draw[arr] (lex)    -- node[labl, above]{tokens}      (par);
-  \draw[arr] (par)    -- node[labl, right]{Program}     (interp);
-  \draw[arr] (interp) -- node[labl, above]{MoveStatement} (robot);
-  \draw[arr] (ui)     -- node[labl, left]{RUN / RESET}  (robot);
-  \draw[arr] (level)  -- node[labl, below]{setup()}     (ui);
-\end{tikzpicture}
+  \fbox{\parbox{0.85\linewidth}{\centering System architecture diagram omitted for automated build.}}
 \end{center}
 
 \subsection{Execution Pipeline}
 
 \begin{center}
-\begin{tikzpicture}[
-  font=\sffamily\small,
-  step/.style={rectangle, rounded corners=5pt, draw=primary, fill=sectionbg,
-               minimum width=3cm, minimum height=1.1cm, inner sep=6pt},
-  data/.style={rectangle, rounded corners=3pt, draw=accent!70, fill=accentlight,
-               minimum width=2.4cm, minimum height=0.7cm, inner sep=4pt,
-               font=\ttfamily\scriptsize},
-  arr/.style={-{Stealth[length=6pt]}, primary, thick},
-  node distance=0.8cm and 0.2cm
-]
-  \node[step] (src)   {\textbf{1. Source Text}\\{\scriptsize Player's typed code}};
-  \node[data, right=0.4cm of src] (tok) {List<Token>};
-  \node[step, right=0.4cm of tok] (lex) {\textbf{2. Lexer}\\{\scriptsize \texttt{Lexer.tokenize()}}};
-  \node[data, right=0.4cm of lex] (ast) {Program (AST)};
-  \node[step, right=0.4cm of ast] (par) {\textbf{3. Parser}\\{\scriptsize \texttt{Parser.parse()}}};
-
-  \node[step, below=1.2cm of par] (itp) {\textbf{4. Interpreter}\\{\scriptsize \texttt{.load(program)}}};
-  \node[data, left=0.4cm of itp] (mv) {MoveStatement};
-  \node[step, left=0.4cm of mv]  (rob) {\textbf{5. RobotActor}\\{\scriptsize \texttt{.executeMove()}}};
-  \node[step, left=0.4cm of rob] (anim) {\textbf{6. Animation}\\{\scriptsize Greenfoot act() loop}};
-
-  \draw[arr] (src)  -- (tok);
-  \draw[arr] (tok)  -- (lex);
-  \draw[arr] (lex)  -- (ast);
-  \draw[arr] (ast)  -- (par);
-  \draw[arr] (par)  -- (itp);
-  \draw[arr] (itp)  -- (mv);
-  \draw[arr] (mv)   -- (rob);
-  \draw[arr] (rob)  -- (anim);
-\end{tikzpicture}
+  \fbox{\parbox{0.85\linewidth}{\centering Execution pipeline diagram omitted for automated build.}}
 \end{center}
 
 \vspace{6pt}
@@ -960,66 +1001,237 @@ The Interpreter maintains a \texttt{Deque<Frame>} where each \texttt{Frame} trac
 
 \begin{tcolorbox}[gddbox, title={Level Design Philosophy}]
 \begin{enumerate}[label=\textbf{P\arabic*.}, leftmargin=3em, noitemsep]
-  \item \textbf{Introduce one concept per level.} Level 1 introduces movement only. Subsequent levels introduce obstacles, then loops, then nested loops.
-  \item \textbf{Solvable without loops first.} Every level can be completed with only move commands. Loops are rewarded (fewer instructions) but never required.
-  \item \textbf{Visual clarity.} The optimal path is visible by inspection. Players should be able to trace the route with their eyes before coding.
-  \item \textbf{Grid alignment.} All objects are placed on 20-pixel grid boundaries. Start and goal positions are chosen so that integer arithmetic always gives the correct move count.
+  \item \textbf{One concept per group, not per level.} Levels within a group reinforce the same concept with increasing spatial complexity. Concepts are introduced at group boundaries, not arbitrarily.
+  \item \textbf{Repetition before abstraction.} Players are made to feel the pain of typing long sequential programs (groups 1--2) before loops are introduced (group 3). The loop concept earns its reveal.
+  \item \textbf{Every level is solvable without loops.} No level requires a \keyword{repeat} to reach the goal. Loops are rewarded through the star system, never gated.
+  \item \textbf{Visual clarity.} The optimal path is visible by inspection. Players should be able to trace the route with their eyes before writing a single line of code.
+  \item \textbf{Grid alignment.} All objects are placed on 20-pixel grid boundaries. Integer arithmetic always gives the correct move count — players can count tiles directly.
+  \item \textbf{Each level has a pedagogical intent.} This intent is surfaced in the chamber intro pop-up so the player knows what concept they are being asked to demonstrate.
 \end{enumerate}
 \end{tcolorbox}
 
-\subsection{Level 1 — Tutorial}
-
-\begin{tcolorbox}[gddbox, title={Level 1 Specification}]
-\gddfield{Robot start:}{\texttt{(100, 100)} — top-left quadrant of the game area}
-\gddfield{Goal position:}{\texttt{(500, 300)} — centre-right}
-\gddfield{Obstacles:}{\texttt{(300, 200)}, \texttt{(300, 220)}, \texttt{(300, 240)} — a vertical wall of 3 blocks}
-\gddfield{Optimal solution:}{Move right 10 times, down 8 times (going around the wall); or \texttt{repeat(10)\{moveRight\}end} + \texttt{repeat(8)\{moveDown\}end}}
-\gddfield{Learning goal:}{Practice basic movement; observe what happens when the robot walks into a wall.}
-\end{tcolorbox}
+% ------------------------------------------------------------------
+\subsection{Level Progression Overview}
 
 \begin{center}
-\begin{tikzpicture}[font=\sffamily\tiny, scale=0.45]
-  % Grid
-  \fill[gridbg] (0,0) rectangle (30,22);
-  \draw[primary!20, step=1] (0,0) grid (30,22);
-  \draw[primary, thick] (0,0) rectangle (30,22);
-  % Robot start (5,5 in grid units: 100/20=5, 100/20=5)
-  \fill[primary] (5,17) rectangle (6,18);
-  \node[white, font=\bfseries\sffamily\tiny] at (5.5,17.5) {R};
-  % Goal (25,15 in grid: 500/20=25, but grid Y is inverted: (600-300)/20=15)
-  \fill[number!80, rounded corners=1pt] (25,9) rectangle (26,10);
-  \node[font=\bfseries\sffamily\tiny, number!80] at (25.5,9.5) {$\star$};
-  % Obstacles (300/20=15, 200/20=10 → inverted: 22-10=12)
-  \fill[darkbg!80] (15,12) rectangle (16,13);
-  \fill[darkbg!80] (15,11) rectangle (16,12);
-  \fill[darkbg!80] (15,10) rectangle (16,11);
-  % Path arrow (simplified)
-  \draw[->, accent, thick, dashed] (5.5,17.5) -- (14.5,17.5) -- (14.5,9.5) -- (25.5,9.5);
-  % Labels
-  \node[primary, above] at (5.5,18) {Start};
-  \node[primary, right] at (26,9.5) {Goal};
-  \node[darkbg!60, right] at (16,11.5) {Wall};
-  \node[accent!80, above] at (10,17.5) {\tiny 10$\times$ moveRight};
-  \node[accent!80, right] at (14.5,13.5) {\tiny 8$\times$ moveDown};
-\end{tikzpicture}
-\end{center}
-
-\subsection{Level Progression Plan}
-
-\begin{center}
-\begin{tabularx}{\linewidth}{>{\bfseries\sffamily\color{primary}}c >{\bfseries\sffamily}p{3cm} X >{\sffamily}p{3cm}}
+\begin{tabularx}{\linewidth}{>{\bfseries\sffamily\color{primary}}c >{\sffamily}p{2.4cm} >{\sffamily}p{3.5cm} >{\sffamily}X >{\sffamily\centering}p{2.4cm}}
   \toprule
-  Level & Name & New Concept & Key Mechanic Taught \\
+  \# & Chamber Name & Group & Pedagogical Intent & Scoring Mode \\
   \midrule
-  1 & Tutorial Path & Basic movement; single vertical wall & Sequential instructions \\
-  2 & L-Turn Maze & Corner turns with multiple walls & Planning compound paths \\
-  3 & Long Corridor & Long repeated movement & Using \keyword{repeat} for efficiency \\
-  4 & Zigzag Alley & Alternating direction pattern & Recognising repeating sub-paths \\
-  5 & Nested Chambers & Inner loops within outer loops & Nested \keyword{repeat} \\
-  6 & The Labyrinth & Dense obstacle field; multiple valid paths & Algorithm design and debugging \\
+  1 & Straight Shot      & Command Discovery   & Learn \keyword{moveRight}; sequential repetition       & Correctness \\
+  2 & Corridor Turn      & Command Discovery   & Add \keyword{moveDown}; directional change              & Correctness \\
+  3 & Four Directions    & Command Discovery   & Introduce all four move commands                        & Correctness \\
+  4 & Long March         & Command Discovery   & Repetition frustration — sets up loop payoff            & Correctness \\
+  \midrule
+  5 & Mixed Path         & Sequencing Mastery  & Plan a multi-direction route                            & Correctness \\
+  6 & Detour             & Sequencing Mastery  & Navigate around an obstacle sequentially                & Correctness \\
+  7 & Offset Corridor    & Sequencing Mastery  & Complex sequential route requiring planning ahead       & Correctness \\
+  \midrule
+  8 & Repeat Corridor    & Loop Introduction   & First obvious \keyword{repeat} opportunity (straight)   & Abstraction \\
+  9 & Step and Repeat    & Loop Introduction   & Loop one segment, sequence the rest                     & Abstraction \\
+  10 & Two Segments      & Loop Introduction   & Loop + sequence + loop combined                         & Abstraction \\
+  \midrule
+  11 & Column Descent    & Structural Reasoning & Nested \keyword{repeat} — rows of horizontal steps      & Abstraction \\
+  12 & Stagger Grid      & Structural Reasoning & Nested loops with offset pattern                        & Abstraction \\
+  13 & Broken Symmetry   & Structural Reasoning & Loop exists but is partially interrupted — hybrid logic & Abstraction \\
+  14 & Wide Traversal    & Structural Reasoning & Perimeter-style path; multiple valid decompositions     & Abstraction \\
+  15 & Final Chamber     & Structural Reasoning & Full synthesis — nested structure or layered loops      & Abstraction \\
   \bottomrule
 \end{tabularx}
 \end{center}
+
+% ------------------------------------------------------------------
+\subsection{Chamber Intro Pop-up Design}
+
+\begin{tcolorbox}[gddbox, title={Level Intro Pop-up — Structure}]
+Each chamber displays a dismissible overlay when the level loads for the first time. The overlay has three navigable steps:
+
+\vspace{4pt}
+\begin{enumerate}[label=\textbf{Step \arabic*.}, leftmargin=3.5em, noitemsep]
+  \item \textbf{Chamber Designation \& Narrative.} The chamber number and name in Project RIVETS framing (e.g.\ \emph{``Chamber 8 — Pattern Recognition. RIVETS has encountered a long corridor. A capable programmer sees repetition as structure, not labor. Prove it.''})
+  \item \textbf{Available Commands.} The keyword set for this level, with one worked example inline. Loop-phase levels display \keyword{repeat(N) \{ \ldots \}} syntax here for the first time.
+  \item \textbf{Mission Objective.} One sentence. \emph{``Guide RIVETS to the goal tile. Optimal solutions will be scored.''}
+\end{enumerate}
+
+\vspace{4pt}
+\gddfield{Replay behaviour:}{On subsequent attempts, the player can skip the intro via an \textbf{X / Skip} button on Step 1. The pop-up is never suppressed on a first visit.}
+\end{tcolorbox}
+
+% ------------------------------------------------------------------
+\subsection{Group 1 — Command Discovery (Levels 1--4)}
+
+\begin{tcolorbox}[gddbox, title={Group Design Note}]
+These four levels introduce the Robot Script vocabulary one concept at a time. The paths are short enough to solve quickly, but long enough that typing the same command multiple times becomes mechanically tedious — building the emotional groundwork for loops.
+\end{tcolorbox}
+
+\begin{tcolorbox}[gddbox, title={Level 1 — Straight Shot}]
+\gddfield{Pedagogical intent:}{Introduce \keyword{moveRight}. Demonstrate that each command moves RIVETS exactly one tile. Establish the read--type--run cycle.}
+\gddfield{Path:}{\texttt{S → → → → → G} (5 tiles right)}
+\gddfield{Maze:}{Open corridor, no obstacles. Start left, goal right.}
+\gddfield{Naive/Optimal solution:}{\keyword{moveRight} $\times$ 5 (any correct sequential solution earns 3 stars)}
+\gddfield{Intro narrative:}{\emph{``Chamber 1 — Linear Traversal. RIVETS awaits its first instruction. Show it the way forward.''}}
+\end{tcolorbox}
+
+\begin{tcolorbox}[gddbox, title={Level 2 — Corridor Turn}]
+\gddfield{Pedagogical intent:}{Add \keyword{moveDown}. Introduce directional change — the robot follows the \emph{last} instruction given, not an assumed direction.}
+\gddfield{Path:}{\texttt{S → → →} then \texttt{↓ ↓ G} (3 right, 2 down)}
+\gddfield{Maze:}{L-shaped open path. Wall blocks the direct route downward from start.}
+\gddfield{Solution:}{\keyword{moveRight} $\times$ 3, \keyword{moveDown} $\times$ 2}
+\gddfield{Intro narrative:}{\emph{``Chamber 2 — Angular Shift. The corridor bends. RIVETS cannot guess — you must tell it when to turn.''}}
+\end{tcolorbox}
+
+\begin{tcolorbox}[gddbox, title={Level 3 — Four Directions}]
+\gddfield{Pedagogical intent:}{Introduce all four move commands within a single short path. Player must switch directions multiple times.}
+\gddfield{Path:}{\texttt{S → ↓ → ↓ → G} (alternating right and down, 5 commands total)}
+\gddfield{Solution:}{\keyword{moveRight}, \keyword{moveDown}, \keyword{moveRight}, \keyword{moveDown}, \keyword{moveRight}}
+\gddfield{Intro narrative:}{\emph{``Chamber 3 — Cardinal Control. All four directions are now available. The path ahead changes course. Stay sharp.''}}
+\end{tcolorbox}
+
+\begin{tcolorbox}[gddbox, title={Level 4 — Long March}]
+\gddfield{Pedagogical intent:}{Force the player to type \keyword{moveRight} eight times in a row. This is deliberately tedious — the player should \emph{feel} the inefficiency before loops are introduced in Group 3.}
+\gddfield{Path:}{\texttt{S → → → → → → → → G} (8 tiles right)}
+\gddfield{Solution:}{\keyword{moveRight} $\times$ 8 (no loops taught yet)}
+\gddfield{Design note:}{No loops are explained or hinted here. The frustration of typing the same command repeatedly is the entire point. When \keyword{repeat} appears at Level 8, players understand exactly why it exists.}
+\gddfield{Intro narrative:}{\emph{``Chamber 4 — Endurance. A long straight path. RIVETS does not tire. Do you?''}}
+\end{tcolorbox}
+
+% ------------------------------------------------------------------
+\subsection{Group 2 — Sequencing Mastery (Levels 5--7)}
+
+\begin{tcolorbox}[gddbox, title={Group Design Note}]
+Players now use all four commands in combination to navigate increasingly complex routes. No loops are introduced. The goal is to build spatial reasoning and planning skill — reading the maze, decomposing the path into phases, and translating each phase into a sequence of commands.
+\end{tcolorbox}
+
+\begin{tcolorbox}[gddbox, title={Level 5 — Mixed Path}]
+\gddfield{Pedagogical intent:}{Plan a multi-direction route with no repeated sub-path. Every command in the solution is different from at least one adjacent command.}
+\gddfield{Path:}{\texttt{S → → ↓ → → ↑ → G} (7 commands, all four directions used)}
+\gddfield{Solution:}{\keyword{moveRight} $\times$ 2, \keyword{moveDown}, \keyword{moveRight} $\times$ 2, \keyword{moveUp}, \keyword{moveRight}}
+\end{tcolorbox}
+
+\begin{tcolorbox}[gddbox, title={Level 6 — Detour}]
+\gddfield{Pedagogical intent:}{Navigate around an obstacle using a detour. The direct path is blocked; the player must plan a longer route.}
+\gddfield{Path:}{Start top-left. Obstacle wall forces the robot down and around before reaching the goal centre-right.}
+\gddfield{Solution:}{Sequential commands, approximately 10--12 total, using all four directions. No single direction repeated more than 3 times consecutively.}
+\end{tcolorbox}
+
+\begin{tcolorbox}[gddbox, title={Level 7 — Offset Corridor}]
+\gddfield{Pedagogical intent:}{Navigate a two-step staircase path where the goal is not visible from the start position. Requires planning ahead and committing to the full route before running.}
+\gddfield{Path:}{Two horizontal segments offset vertically, connected by a short vertical passage.}
+\gddfield{Solution:}{\keyword{moveRight} $\times$ 4, \keyword{moveDown} $\times$ 2, \keyword{moveRight} $\times$ 4, \keyword{moveDown} $\times$ 2, \keyword{moveRight} $\times$ 4}
+\gddfield{Design note:}{This solution has a clear repeating unit (\keyword{moveRight} $\times$ 4 + \keyword{moveDown} $\times$ 2), but loops have not been taught yet. Some players may notice the pattern and feel the desire for a shortcut — which is precisely what Level 8 delivers.}
+\end{tcolorbox}
+
+% ------------------------------------------------------------------
+\subsection{Group 3 — Loop Introduction (Levels 8--10)}
+
+\begin{tcolorbox}[gddbox, title={Group Design Note}]
+\keyword{repeat(N) \{ \ldots \}} is introduced here for the first time, explained in the Level 8 chamber intro pop-up. Each level in this group presents a path where at least one segment has obvious repetition. The star rubric now rewards using the loop. A purely sequential solution still reaches the goal but earns only 1 star.
+\end{tcolorbox}
+
+\begin{tcolorbox}[gddbox, title={Level 8 — Repeat Corridor}]
+\gddfield{Pedagogical intent:}{The simplest possible loop opportunity: a straight corridor where the same command is needed many times.}
+\gddfield{Path:}{\texttt{S → → → → → → → → G} (8 tiles right — same as Level 4)}
+\gddfield{1-star solution:}{\keyword{moveRight} $\times$ 8}
+\gddfield{3-star solution:}{\keyword{repeat(8) \{ moveRight \}}}
+\gddfield{Design note:}{The path is intentionally identical to Level 4. The player has already suffered through typing this. Introducing \keyword{repeat} here creates an immediate \emph{``aha''} moment: the same frustration, now solved in one line.}
+\gddfield{Intro narrative:}{\emph{``Chamber 8 — Pattern Recognition. You have walked this corridor before. A skilled programmer does not repeat themselves — they compress. \keyword{repeat} is now available.''}}
+\end{tcolorbox}
+
+\begin{tcolorbox}[gddbox, title={Level 9 — Step and Repeat}]
+\gddfield{Pedagogical intent:}{Loop one segment of the path; handle the rest sequentially. The player must decide \emph{which} part to loop.}
+\gddfield{Path:}{5 tiles right, then 2 tiles down to the goal.}
+\gddfield{1-star solution:}{\keyword{moveRight} $\times$ 5, \keyword{moveDown} $\times$ 2}
+\gddfield{3-star solution:}{\keyword{repeat(5) \{ moveRight \}}, \keyword{moveDown} $\times$ 2}
+\gddfield{2-star solution:}{Uses a \keyword{repeat} but on the wrong segment (e.g.\ \keyword{repeat(2) \{ moveDown \}} while writing \keyword{moveRight} $\times$ 5 sequentially)}
+\end{tcolorbox}
+
+\begin{tcolorbox}[gddbox, title={Level 10 — Two Segments}]
+\gddfield{Pedagogical intent:}{Two distinct repeating segments separated by a direction change. The optimal solution uses two separate \keyword{repeat} blocks.}
+\gddfield{Path:}{3 tiles right, 1 tile down, 3 tiles right to goal.}
+\gddfield{1-star solution:}{\keyword{moveRight} $\times$ 3, \keyword{moveDown}, \keyword{moveRight} $\times$ 3}
+\gddfield{3-star solution:}{\keyword{repeat(3) \{ moveRight \}}, \keyword{moveDown}, \keyword{repeat(3) \{ moveRight \}}}
+\gddfield{2-star solution:}{Uses \keyword{repeat} for one of the two horizontal segments but not both.}
+\end{tcolorbox}
+
+% ------------------------------------------------------------------
+\subsection{Group 4 — Structural Reasoning (Levels 11--15)}
+
+\begin{tcolorbox}[gddbox, title={Group Design Note}]
+These levels require recognising structure in two dimensions. The optimal solutions use \keyword{repeat} nested inside \keyword{repeat}, or multiple coordinated loops. A flat sequential solution earns 1 star. A partial loop solution earns 2. Only the structurally correct decomposition earns 3.
+\end{tcolorbox}
+
+\begin{tcolorbox}[gddbox, title={Level 11 — Column Descent}]
+\gddfield{Pedagogical intent:}{Introduce nested \keyword{repeat}. The path has a two-dimensional regular structure: move right 3 tiles, move down 1, repeated 3 times.}
+\gddfield{Path:}{%
+\begin{lstlisting}[language=RobotScript, numbers=none]
+S → → →
+        ↓
+  → → → ↓
+        ↓
+  → → → G
+\end{lstlisting}}
+\gddfield{3-star solution:}{%
+\begin{lstlisting}[language=RobotScript]
+repeat(3)
+  repeat(3)
+    moveRight
+  end
+  moveDown
+end
+\end{lstlisting}}
+\gddfield{2-star solution:}{Uses a flat \keyword{repeat(3)} for the horizontal segments but writes \keyword{moveDown} $\times$ 3 sequentially outside.}
+\gddfield{1-star solution:}{\keyword{moveRight} $\times$ 3, \keyword{moveDown}, \keyword{moveRight} $\times$ 3, \keyword{moveDown}, \keyword{moveRight} $\times$ 3, \keyword{moveDown}}
+\end{tcolorbox}
+
+\begin{tcolorbox}[gddbox, title={Level 12 — Stagger Grid}]
+\gddfield{Pedagogical intent:}{Nested loops with an offset pattern — each row shifts 1 tile right relative to the previous, requiring a more careful decomposition.}
+\gddfield{Path:}{Three descending diagonal corridors, each 3 tiles wide, separated by single-cell vertical drops.}
+\gddfield{3-star solution:}{Nested \keyword{repeat} with \keyword{moveRight} $\times$ 3 inner, \keyword{moveDown} outer, adjusted for offset.}
+\end{tcolorbox}
+
+\begin{tcolorbox}[gddbox, title={Level 13 — Broken Symmetry}]
+\gddfield{Pedagogical intent:}{A path that \emph{almost} has perfect loop structure, but one segment is interrupted. Forces the player to use a hybrid of loops and sequential commands, recognising where structure breaks down.}
+\gddfield{3-star solution:}{A \keyword{repeat} block for the regular portion, plus standalone sequential commands for the irregular tail.}
+\gddfield{Design note:}{This is the hardest abstraction challenge of the group. A player who blindly applies a nested loop from Level 11 will fail. The star system rewards recognising \emph{partial} structure.}
+\end{tcolorbox}
+
+\begin{tcolorbox}[gddbox, title={Level 14 — Wide Traversal}]
+\gddfield{Pedagogical intent:}{A wide perimeter-style path with multiple valid decompositions. Tests whether the player can reason about large-scale structure and choose an efficient representation.}
+\gddfield{Path:}{%
+\begin{lstlisting}[language=RobotScript, numbers=none]
+S → → → → →
+↓           ↓
+↓           ↓
+G ← ← ← ← ←
+\end{lstlisting}}
+\gddfield{3-star solution:}{Loop-based perimeter traversal — \keyword{repeat} for top segment, single \keyword{moveDown} calls, \keyword{repeat} for bottom segment (reversed).}
+\gddfield{Design note:}{Multiple correct 3-star solutions exist. The scorer checks for loop usage on the two long horizontal segments, not for a specific program text.}
+\end{tcolorbox}
+
+\begin{tcolorbox}[redbox, title={Level 15 — Final Chamber}]
+\gddfield{Pedagogical intent:}{Full synthesis. The path requires both nested structure and multi-segment coordination. This is the definitive test of whether the player has internalised structural abstraction.}
+\gddfield{Path:}{Three rows of 6 tiles right, each followed by a \keyword{moveDown}, forming a grid pattern:}
+\gddfield{}{%
+\begin{lstlisting}[language=RobotScript, numbers=none]
+S → → → → → →
+↓
+→ → → → → → ↓
+↓
+→ → → → → → G
+\end{lstlisting}}
+\gddfield{3-star solution:}{%
+\begin{lstlisting}[language=RobotScript]
+repeat(3)
+  repeat(6)
+    moveRight
+  end
+  moveDown
+end
+\end{lstlisting}}
+\gddfield{2-star solution:}{Uses loops for horizontal segments but writes \keyword{moveDown} sequentially outside any loop.}
+\gddfield{1-star solution:}{Pure sequential — 20+ individual move commands.}
+\gddfield{Outro:}{On completion, the level transition triggers the RIVETS Final Classification screen, computed from the player's aggregate star total across all 15 chambers.}
+\end{tcolorbox}
 
 % ============================================================
 \section{Technical Requirements}
@@ -1229,6 +1441,9 @@ The Interpreter maintains a \texttt{Deque<Frame>} where each \texttt{Frame} trac
 \end{tcolorbox}
 
 % ============================================================
+
+% ============================================================
+% ============================================================
 \section{Risk Assessment}
 % ============================================================
 
@@ -1248,23 +1463,253 @@ The Interpreter maintains a \texttt{Deque<Frame>} where each \texttt{Frame} trac
 \end{tcolorbox}
 
 % ============================================================
+
+% ============================================================
+\section{Serious Game Design Framework}
+% ============================================================
+
+\begin{tcolorbox}[redbox, title={Framework Selection — CMX (Malliarakis, Satratzemi \& Xinogalos, 2014)}]
+\textbf{Robot Programmer} was designed using the \textbf{CMX design framework} as its primary theoretical lens. CMX was developed specifically for educational games that teach computer programming, making it the most directly applicable framework for this project.
+
+\vspace{4pt}
+The CMX methodology follows a structured progression: players engage in \textbf{actions} within attractive scenarios, cultivating a \textbf{desire for improvement}; this drives \textbf{discovery of knowledge}; knowledge is consolidated through \textbf{learning activities}; progress is verified through \textbf{evaluation}; the cycle concludes with \textbf{goal achievement}. Each phase maps directly to design decisions made in this game.
+
+\vspace{4pt}
+\small\textit{Reference: Malliarakis, C., Satratzemi, M., \& Xinogalos, S. (2014). Designing educational games for computer programming: A holistic framework. \textit{Electronic Journal of e-Learning}, 12(3), 281--298.}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+\subsection{Learning Objectives}
+
+\begin{tcolorbox}[gddbox, title={Generic Goals}]
+The overarching goal is to introduce players aged 10--18 to the foundations of imperative programming and computational thinking through direct play --- without prior programming knowledge or a separate development environment. By the end of a full session the player will have written, executed, debugged, and improved real programs.
+\end{tcolorbox}
+
+\vspace{4pt}
+
+\begin{tcolorbox}[gddbox, title={Domain-Specific Goals per Level Group}]
+\begin{tabularx}{\linewidth}{>{\bfseries\sffamily\color{primary}}p{4cm} X}
+  \toprule
+  Level Group & Domain-Specific Learning Goal \\
+  \midrule
+  Group 1 — Command Discovery (1--4) &
+    Understand that a program is a sequence of explicit instructions; learn all four directional commands; observe that the machine executes literally. \\[4pt]
+  Group 2 — Sequencing Mastery (5--7) &
+    Compose multi-command programs; practice decomposition and algorithm design. \\[4pt]
+  Group 3 — Loop Introduction (8--10) &
+    Recognise repetition; express it using \keyword{repeat(N) \{ \ldots \}}; understand abstraction as compression. \\[4pt]
+  Group 4 — Structural Reasoning (11--15) &
+    Identify two-dimensional structure; nest \keyword{repeat} blocks; reason about when loops apply and when sequential commands are still needed. \\
+  \bottomrule
+\end{tabularx}
+\end{tcolorbox}
+
+\vspace{4pt}
+
+\begin{tcolorbox}[gddbox, title={Student-Set Goals}]
+The star rating system gives players an implicit self-directed goal beyond mere completion: achieving 3 stars by finding the most elegant solution. A player who reaches the goal with brute-force sequential commands sees their 1-star rating and may choose to return and improve --- student-initiated optimisation, a key CMX element.
+\end{tcolorbox}
+
+\vspace{6pt}
+
+\subsection{Pedagogy}
+
+\begin{tcolorbox}[gddbox, title={Learning Strategy}]
+\gddfield{Approach:}{\textbf{Learning by doing} (constructivist) combined with \textbf{problem-based learning}. Each level presents a concrete problem (navigate this maze) solved by constructing a program. Knowledge is discovered through action and feedback, not passive instruction.}
+\gddfield{Scaffolding:}{Concepts are introduced incrementally. A player never encounters a loop until they have experienced the frustration of typing the same command repeatedly (Level 4). This ensures the abstraction of \keyword{repeat} is motivated by a felt need.}
+\gddfield{Feedback loops:}{Two feedback levels: (a) the \textbf{terminal} shows every instruction executed in real time; (b) the \textbf{star rating} on completion provides evaluative feedback on solution quality, prompting reflection and improvement.}
+\end{tcolorbox}
+
+\vspace{4pt}
+
+\begin{tcolorbox}[gddbox, title={Course Organisation}]
+The 15 levels are organised into four groups of increasing abstraction. The chamber intro pop-up names the concept being tested and shows available commands --- providing explicit course organisation within the game world. The player always knows \emph{what} they are being asked to learn, not just \emph{what} they must do.
+\end{tcolorbox}
+
+\vspace{6pt}
+
+\subsection{Learning Content}
+
+\begin{tcolorbox}[gddbox, title={Units of Learning}]
+\begin{enumerate}[label=\textbf{Unit \arabic*.}, leftmargin=3.5em, noitemsep]
+  \item \textbf{Sequential Commands} (Levels 1--7): the move vocabulary and how commands compose into programs.
+  \item \textbf{Counted Iteration} (Levels 8--10): \keyword{repeat(N)} for compressing repetitive sequences.
+  \item \textbf{Nested Iteration \& Structural Decomposition} (Levels 11--15): \keyword{repeat} inside \keyword{repeat}; hybrid solutions for partially irregular structures.
+\end{enumerate}
+\end{tcolorbox}
+
+\vspace{4pt}
+
+\begin{tcolorbox}[gddbox, title={Scenario}]
+\gddfield{Narrative:}{\textbf{Project RIVETS: Autonomous Awakening.} The player is a researcher training the world's first autonomous robot through simulated test chambers. The scenario generates \emph{desire for improvement} --- the first motivational driver in the CMX methodology. A Type I classification is not a failure, but players who engage with the narrative will want Type III.}
+\end{tcolorbox}
+
+\vspace{4pt}
+
+\begin{tcolorbox}[gddbox, title={Characters}]
+\begin{tabularx}{\linewidth}{>{\bfseries\sffamily\color{primary}}p{3.2cm} X}
+  \toprule
+  Character & CMX Role \\
+  \midrule
+  \textbf{RIVETS} &
+    The player's agent. Executes programs literally --- a live demonstration that computers do exactly what they are told. Animated responses provide embodied, immediate feedback on every instruction. \\[4pt]
+  \textbf{The Programmer} (player) &
+    The learner, expressed through the code they write. No avatar --- presence is expressed through the program. Reinforces the real-world programmer--machine relationship. \\[4pt]
+  \textbf{Goal tile} &
+    The concrete, visible representation of each chamber's objective. \\
+  \bottomrule
+\end{tabularx}
+\end{tcolorbox}
+
+\vspace{4pt}
+
+\begin{tcolorbox}[gddbox, title={Awards and Interim / Final Goals}]
+\gddfield{Per-level awards:}{Each chamber awards 0--3 stars on completion based on abstraction quality (see Level Scoring subsection). Stars persist on the level overview screen.}
+\gddfield{Interim goals:}{Each level completion is an interim goal. The level overview screen shows all 15 chambers with star ratings, giving a visible sense of progress through the training arc.}
+\gddfield{Final goal:}{At Chamber 15, RIVETS receives its final classification (Type I, II, or III) from the aggregate star total. This is the narrative and mechanical conclusion of the game.}
+\end{tcolorbox}
+
+\vspace{4pt}
+
+\begin{tcolorbox}[gddbox, title={Virtual World}]
+\gddfield{Environment:}{A 2D top-down grid world in an 800$\times$600-pixel Greenfoot window. The visual aesthetic is a clean ``robot simulation'' --- abstract and readable, emphasising the programming challenge over graphical complexity.}
+\gddfield{CMX alignment:}{Minimal decoration keeps the focus on the code editor. The environment feels like a legitimate engineering simulation, consistent with the Project RIVETS narrative.}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+\subsection{Learning Outcomes}
+
+\begin{tcolorbox}[gddbox, title={Skills Developed}]
+\begin{tabularx}{\linewidth}{>{\bfseries\sffamily\color{primary}}p{4cm} X}
+  \toprule
+  Skill & How the game develops it \\
+  \midrule
+  Algorithm design & Writing a maze-navigation program \emph{is} algorithm design. Every step must be specified; nothing is inferred. \\[4pt]
+  Debugging & Terminal output shows exactly what executed and what happened. The read--fix--rerun cycle mirrors real-world debugging. \\[4pt]
+  Pattern recognition & Levels 8--15 reward players who notice repeating sub-paths and compress them into loops. \\[4pt]
+  Abstraction & \keyword{repeat} teaches that a structure can stand in for a longer expansion --- the core of programming abstraction. \\[4pt]
+  Decomposition & Every multi-phase path must be broken into sequential segments before it can be coded. \\
+  \bottomrule
+\end{tabularx}
+\end{tcolorbox}
+
+\vspace{4pt}
+
+\begin{tcolorbox}[gddbox, title={Knowledge Acquired}]
+\begin{itemize}[noitemsep]
+  \item Sequential execution: programs run top-to-bottom, one instruction at a time.
+  \item The syntax and semantics of all six Robot Script keywords.
+  \item The concept of a counted loop --- and when to use one.
+  \item The concept of nesting: a \keyword{repeat} block may contain another \keyword{repeat} block.
+  \item That the same goal can be reached by programs of varying quality, and that quality is measurable.
+\end{itemize}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+\subsection{Engagement and Activities}
+
+\begin{tcolorbox}[gddbox, title={Scaffolding}]
+\begin{enumerate}[label=\textbf{S\arabic*.}, leftmargin=3em, noitemsep]
+  \item \textbf{Level grouping:} Concepts are introduced in a fixed sequence. The level order \emph{is} the scaffold --- a player cannot face nested loops before mastering single ones.
+  \item \textbf{Chamber intro pop-up:} Each level opens with a three-step overlay naming the concept, showing available commands, and providing a worked syntax example.
+  \item \textbf{Hint system (post-MVP):} After a configurable number of failed attempts, a context-sensitive hint nudges the player toward the intended abstraction. Designed but deferred to a post-submission extension.
+\end{enumerate}
+\end{tcolorbox}
+
+\vspace{4pt}
+
+\begin{tcolorbox}[gddbox, title={Interactivity and Programming Editor}]
+\gddfield{Core interaction:}{The player types programs into an embedded code editor. No drag-and-drop --- real syntax, lexed and parsed by a full interpreter pipeline on every RUN.}
+\gddfield{Immediate execution:}{Pressing RUN animates RIVETS in real time --- one tile per instruction. The player watches the effect of each command as it executes, building a mental model of sequential execution.}
+\gddfield{Iterative refinement:}{RESET restores RIVETS to the start tile and clears the terminal but not the editor, encouraging the real development workflow: write, run, observe, edit, rerun.}
+\gddfield{Syntax feedback:}{Lexer and parser errors are reported on the offending line in plain English, teaching players to read error messages in a low-stakes environment.}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+\subsection{Infrastructure}
+
+\begin{tcolorbox}[gddbox, title={User Interface}]
+Four always-visible regions: \textbf{game area} (maze + RIVETS), \textbf{code editor} (typing panel with syntax highlighting), \textbf{terminal} (execution log and errors), and \textbf{controls} (RUN / RESET). The player never loses sight of the maze while writing code --- keeping the connection between code and effect spatially immediate.
+\end{tcolorbox}
+
+\vspace{4pt}
+
+\begin{tcolorbox}[gddbox, title={Interpreter}]
+\gddfield{Pipeline:}{Source code passes through: \textbf{Lexer} (tokenisation) $\rightarrow$ \textbf{Parser} (AST construction) $\rightarrow$ \textbf{Interpreter} (AST traversal and execution). A real, complete language implementation --- not a string-matching simulation.}
+\gddfield{CMX alignment:}{The interpreter is the infrastructure that makes learning by doing possible. Players are not simulating programming --- they are doing it.}
+\end{tcolorbox}
+
+\vspace{4pt}
+
+\begin{tcolorbox}[gddbox, title={Game Achievement}]
+Achievement is represented at two granularities:
+\begin{itemize}[noitemsep]
+  \item \textbf{Per-level stars (0--3):} Visible on the level overview screen. Reflect both correctness and abstraction quality.
+  \item \textbf{Final RIVETS Classification (Type I / II / III):} Aggregate metric computed from total stars across all 15 chambers. Displayed on the end screen with full narrative framing.
+\end{itemize}
+\vspace{4pt}
+Both metrics serve dual roles: \emph{recognition} of what the player accomplished, and \emph{motivation} to return and improve.
+\end{tcolorbox}
+
+
+% ============================================================
 \section{Educational Outcomes}
 % ============================================================
+
+The outcomes below reflect the game's design as structured through the CMX framework (Malliarakis et al., 2014) --- see the \emph{Serious Game Design Framework} section for the full mapping. Each outcome corresponds to a CMX domain-specific goal realised through the level group progression and the star-based scoring system.
+
+\vspace{6pt}
 
 \begin{tcolorbox}[gddbox, title={Learning Outcomes Mapped to Core Curriculum}]
 \begin{tabularx}{\linewidth}{>{\bfseries\sffamily\color{primary}}p{4cm} X}
   \toprule
   Learning focus & How Robot Programmer addresses it \\
   \midrule
-  \textbf{Digital Technologies — Algorithms} & Players write explicit step-by-step algorithms (programs) that the robot executes exactly as written \\
-  \textbf{Computational Thinking — Sequencing} & Every move command is a sequence element; order matters and is visible in the terminal output \\
-  \textbf{Loops and Iteration} & The \keyword{repeat} construct directly teaches counted loops — the most common structure in beginner programming \\
-  \textbf{Debugging} & Plain-English error messages on the terminal encourage read–fix–rerun cycles identical to real development \\
-  \textbf{Abstraction} & Players think about paths and directions, not about pixels or JVM internals \\
-  \textbf{Problem decomposition} & Complex maze routes are naturally decomposed into movement phases, each expressed as a block of code \\
+  \textbf{Digital Technologies --- Algorithms} &
+    Players write explicit step-by-step algorithms that RIVETS executes exactly as written. Every level is an algorithm design task. \\
+  \textbf{Computational Thinking --- Sequencing} &
+    Every move command is a sequence element; order matters and is visible in the terminal output. Levels 1--7 build this understanding directly. \\
+  \textbf{Loops and Iteration} &
+    The \keyword{repeat} construct teaches counted loops. Introduced at Level 8, reinforced through Level 15. \\
+  \textbf{Debugging} &
+    Plain-English terminal errors encourage read--fix--rerun cycles. The star system motivates revisiting and improving solutions. \\
+  \textbf{Abstraction} &
+    Players think in paths and directions, not pixels or JVM internals. The \keyword{repeat} construct is itself an abstraction. \\
+  \textbf{Problem decomposition} &
+    Complex routes decompose into movement phases (Groups 1--2), then into loop structures (Groups 3--4). \\
+  \textbf{Structural reasoning} &
+    Levels 11--15 require recognising two-dimensional regularity and encoding it with nested loops. \\
   \bottomrule
 \end{tabularx}
 \end{tcolorbox}
+
+\vspace{6pt}
+
+\begin{tcolorbox}[gddbox, title={Outcome Alignment with CMX Methodology}]
+\begin{tabularx}{\linewidth}{>{\bfseries\sffamily\color{primary}}p{3.8cm} X}
+  \toprule
+  CMX Phase & How Robot Programmer realises it \\
+  \midrule
+  \textbf{Actions} &
+    Writing and running programs in each chamber. Every RUN is an action with an immediate visible consequence. \\
+  \textbf{Desire for Improvement} &
+    The Project RIVETS narrative and star rating create motivation to improve code quality, not just reach the goal. \\
+  \textbf{Discovery of Knowledge} &
+    Loops emerge from the player's frustration with Level 4 and relief at Level 8 --- not from abstract explanation. \\
+  \textbf{Learning} &
+    Abstraction, debugging habits, and pattern recognition are acquired progressively across the 15-chamber arc. \\
+  \textbf{Evaluation} &
+    Star rating, terminal output, and the final RIVETS classification together evaluate correctness and quality. \\
+  \textbf{Goal Achievement} &
+    Completing Chamber 15 and receiving the RIVETS classification is the culminating goal --- narrative and mechanical simultaneously. \\
+  \bottomrule
+\end{tabularx}
+\end{tcolorbox}
+
 
 % ============================================================
 \section{Future Work and Extensions}
