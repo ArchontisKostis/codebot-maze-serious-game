@@ -8,8 +8,13 @@
 </head>
 <body>
   <header class="topbar">
-    <h1>CODEBOT <span class="accent">// LEVEL EDITOR</span></h1>
-    <p class="tagline">Draw a 24×20 maze and export it as a <code>.lvl</code> file or share-code the game can load.</p>
+    <div class="brand">
+      <img class="logo" src="assets/logo.png" alt="RIVETS — Robot Programmer" />
+      <span class="brand-sub">Level Editor</span>
+    </div>
+    <div class="topbar-actions">
+      <button id="import-open" class="btn" type="button">Import…</button>
+    </div>
   </header>
 
   <main class="layout">
@@ -29,26 +34,21 @@
       </div>
 
       <p class="hint">Click or drag to paint. Start and goal relocate — there is only ever one of each.</p>
-
-      <div id="validity" class="validity" role="status" aria-live="polite"></div>
-
-      <div class="meta">
-        <label>Name <input id="name" type="text" maxlength="60" placeholder="(optional)" /></label>
-        <label>Author <input id="author" type="text" maxlength="60" placeholder="(optional)" /></label>
-      </div>
-
-      <div class="gallery">
-        <span class="gallery-label">Start from:</span>
-        <div id="gallery-buttons" class="gallery-buttons"></div>
-      </div>
     </section>
 
-    <!-- ── Export / Import side panel ────────────────────────────────────── -->
+    <!-- ── Level form: metadata + export ─────────────────────────────────── -->
     <aside class="side-pane">
-      <section class="panel">
-        <h2>Export</h2>
+      <form class="panel" id="level-form" autocomplete="off">
+        <h2>Level</h2>
 
-        <div class="field">
+        <div id="validity" class="validity" role="status" aria-live="polite"></div>
+
+        <div class="meta">
+          <label>Name <input id="name" type="text" maxlength="60" placeholder="(optional)" /></label>
+          <label>Author <input id="author" type="text" maxlength="60" placeholder="(optional)" /></label>
+        </div>
+
+        <div class="field field-grow">
           <div class="field-head">
             <label for="lvl-text"><code>.lvl</code> text</label>
             <div class="field-actions">
@@ -68,20 +68,31 @@
           </div>
           <textarea id="b64-text" class="output" rows="3" readonly spellcheck="false"></textarea>
         </div>
-      </section>
+      </form>
 
-      <section class="panel">
-        <h2>Import</h2>
-        <p class="panel-hint">Paste a <code>.lvl</code> document or a share-code, or upload a <code>.lvl</code> file.</p>
-        <textarea id="import-text" class="input" rows="6" spellcheck="false" placeholder="Paste .lvl text or base64 share-code…"></textarea>
-        <div class="import-actions">
-          <button id="import-btn" class="btn" type="button">Load from text</button>
-          <label class="btn file-btn">Upload .lvl<input id="import-file" type="file" accept=".lvl,text/plain" hidden /></label>
-        </div>
-        <div id="import-msg" class="import-msg" role="status" aria-live="polite"></div>
-      </section>
+      <div class="gallery">
+        <span class="gallery-label">Start from:</span>
+        <div id="gallery-buttons" class="gallery-buttons"></div>
+      </div>
     </aside>
   </main>
+
+  <!-- ── Import modal ──────────────────────────────────────────────────────── -->
+  <div class="modal-overlay" id="import-modal" role="dialog" aria-modal="true" aria-labelledby="import-title" hidden>
+    <div class="modal">
+      <div class="modal-head">
+        <h2 id="import-title">Import</h2>
+        <button class="modal-close" id="import-close" type="button" aria-label="Close">×</button>
+      </div>
+      <p class="panel-hint">Paste a <code>.lvl</code> document or a share-code, or upload a <code>.lvl</code> file.</p>
+      <textarea id="import-text" class="input" rows="8" spellcheck="false" placeholder="Paste .lvl text or base64 share-code…"></textarea>
+      <div class="import-actions">
+        <button id="import-btn" class="btn" type="button">Load from text</button>
+        <label class="btn file-btn">Upload .lvl<input id="import-file" type="file" accept=".lvl,text/plain" hidden /></label>
+      </div>
+      <div id="import-msg" class="import-msg" role="status" aria-live="polite"></div>
+    </div>
+  </div>
 
   <script src="format.js"></script>
   <script src="templates.js"></script>

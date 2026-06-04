@@ -10,12 +10,12 @@ Hosted at **`codebot.archontis.gr/lvl-editor`**.
 
 | File           | Purpose                                                              |
 | -------------- | ------------------------------------------------------------------- |
-| `index.html`   | Page shell (canvas, palette, metadata, export/import panels)        |
+| `index.html`   | Page shell (logo header, canvas, palette, level form, import modal) |
 | `styles.css`   | Navy "RIVETS terminal" theme (mirrors the game's `UiTheme` palette)  |
 | `format.js`    | The `.lvl` format mirror — serialize/parse + base64. **No DOM.**     |
 | `templates.js` | Starter-gallery templates                                            |
 | `editor.js`    | UI: canvas rendering, painting, validity, export/import wiring       |
-| `assets/`      | The game's own art: tile sprites (floor, wall, coin, goal, robot) + the play-area frame |
+| `assets/`      | The game's own art: tile sprites (floor, wall, coin, goal, robot), the play-area frame, and the `logo` |
 | `test/`        | Node round-trip tests, sample generator, Java interop harness        |
 | `samples/`     | Generated sample levels (`.lvl` + `.b64`) for the interop check      |
 

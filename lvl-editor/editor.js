@@ -39,6 +39,9 @@
   var importBtn = document.getElementById('import-btn');
   var importFileEl = document.getElementById('import-file');
   var importMsgEl = document.getElementById('import-msg');
+  var importOpenBtn = document.getElementById('import-open');
+  var importModalEl = document.getElementById('import-modal');
+  var importCloseBtn = document.getElementById('import-close');
 
   // ── Tile sprites (the game's own assets) ─────────────────────────────────────
   var SPRITE_SRC = {
@@ -285,18 +288,37 @@
     flash(downloadLvlBtn);
   });
 
-  // ── Import ────────────────────────────────────────────────────────────────────────
+  // ── Import (modal) ──────────────────────────────────────────────────────────────────
   function showImportMsg(text, kind) {
     importMsgEl.textContent = text;
     importMsgEl.className = 'import-msg' + (kind ? ' ' + kind : '');
   }
+
+  function openImportModal() {
+    showImportMsg('', '');
+    importModalEl.hidden = false;
+    importTextEl.focus();
+  }
+  function closeImportModal() {
+    importModalEl.hidden = true;
+  }
+
+  importOpenBtn.addEventListener('click', openImportModal);
+  importCloseBtn.addEventListener('click', closeImportModal);
+  // Click the dim backdrop (outside the dialog) to dismiss.
+  importModalEl.addEventListener('click', function (evt) {
+    if (evt.target === importModalEl) { closeImportModal(); }
+  });
+  document.addEventListener('keydown', function (evt) {
+    if (evt.key === 'Escape' && !importModalEl.hidden) { closeImportModal(); }
+  });
 
   function applyImport(input) {
     var result;
     try {
       result = F.load(input);          // throws on malformed input → canvas untouched
     } catch (e) {
-      showImportMsg('✗ ' + e.message, 'bad');
+      showImportMsg('✗ ' + e.message, 'bad');   // modal stays open so the author can fix it
       return;
     }
     grid = result.grid;
@@ -304,7 +326,8 @@
     authorInput.value = result.author || '';
     render();
     refresh();
-    showImportMsg('✓ Level loaded.', 'ok');
+    importTextEl.value = '';           // leave the box clean for next time
+    closeImportModal();                // success: the loaded level + validity banner are the confirmation
   }
 
   importBtn.addEventListener('click', function () {
