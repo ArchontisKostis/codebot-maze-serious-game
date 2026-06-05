@@ -71,6 +71,9 @@ public class SimulationWorld extends World {
     private TileLevelInstaller tileLevelInstaller;
 
     // ── Constructor ───────────────────────────────────────────────────────────
+    public SimulationWorld() {
+        this(LevelManager.getCurrentLevel());
+    }
 
     public SimulationWorld(Level level) {
         this(level, false);

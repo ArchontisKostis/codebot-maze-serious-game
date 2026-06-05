@@ -29,6 +29,12 @@ public class LoadingWorld extends World
         drawLoadingBar();
     }
 
+    /** No-arg constructor used by tools that expect a public default constructor. */
+    public LoadingWorld()
+    {
+        this(() -> new HomeWorld());
+    }
+
     @Override
     public void act()
     {
