@@ -22,6 +22,7 @@ This project was created as part of my Master's assignment for the University of
 - `lvl-editor/` contains the web-based level editor used to create custom levels.
 - `gdd/` contains the game design document files.
 - `scripts/` contains dev utility scripts, such as image compression helpers.
+- `docs` contains a web based documentation of the Robot Script Language for players and instructors
 
 ## Running In Greenfoot
 
