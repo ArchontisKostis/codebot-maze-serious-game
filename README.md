@@ -1,4 +1,4 @@
-![Codebot Maze Serious Game logo](lvl-editor/assets/logo.png)
+![Rivets: Robot Programmer logo](lvl-editor/assets/logo.png)
 
 `Rivets: Robot Programmer` is a Greenfoot-based programming puzzle where you guide a robot through a maze by writing simple instructions. The goal is to reach the objective, collect coins where available, and solve each level with the fewest mistakes possible.
 
