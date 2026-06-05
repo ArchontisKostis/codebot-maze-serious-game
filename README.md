@@ -1,6 +1,6 @@
 ![Codebot Maze Serious Game logo](lvl-editor/assets/logo.png)
 
-Codebot Maze Serious Game is a Greenfoot-based programming puzzle where you guide a robot through a maze by writing simple instructions. The goal is to reach the objective, collect coins where available, and solve each level with the fewest mistakes possible.
+`Rivets: Robot Programmer` is a Greenfoot-based programming puzzle where you guide a robot through a maze by writing simple instructions. The goal is to reach the objective, collect coins where available, and solve each level with the fewest mistakes possible.
 
 This project was created as part of my Master's assignment for the University of Macedonia, in the Serious Game Development course.
 
