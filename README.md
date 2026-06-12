@@ -9,10 +9,7 @@ This project was created as part of my Master's assignment for the University of
 ## Repository Layout
 
 - `game/` contains the Greenfoot scenario and Java source code
-	- `game/images/` holds the in-game graphics.
-	- `game/intro/` and `game/level-intros/` contain intro and level narration assets.
-	- `game/sounds/` contains the audio used by the game.
-- `lvl-editor/` contains the web-based level editor used to create custom levels.
+- `lvl-editor/` contains the web-based level editor used to create custom levels (hosted [here](https://codebot.archontis.gr/lvl-editor/))
 - `gdd/` contains the game design document files.
 - `docs` contains a web based documentation of the Robot Script Language for players and instructors (hosted [here](https://codebot.archontis.gr/docs/))
 
