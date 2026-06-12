@@ -17,7 +17,7 @@ public class LoadCustomWorld extends World {
     private static final int FIELD_TOP = GameScreenLayout.scale(110);
 
     private static final String EDITOR_PROMPT = "Want to make your own level?";
-    private static final String EDITOR_URL = "Use the level editor at: rivets-game.archontis.gr/lvl-editor";
+    private static final String EDITOR_URL = "Use the level editor at: https://codebot.archontis.gr/lvl-editor";
 
     private final LevelInputField input;
     private String status = "Paste a .lvl document or share-code (or type one), then press LOAD.";

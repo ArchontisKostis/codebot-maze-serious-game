@@ -200,7 +200,7 @@ public final class OnboardRegistry {
                 new String[]{
                     "You now have every command RIVETS can use.",
                     "Need a refresher? Open the documentation to see every command, examples, and how they work.",
-                    "Visit: rivets-programming-game-lang-ref.archontis.gr",
+                    "Visit: https://codebot.archontis.gr/docs/",
                     "The tools are yours. Now it's time to master them."
                 },
                 OnboardStep.SpotlightRegion.GAME_AREA,
